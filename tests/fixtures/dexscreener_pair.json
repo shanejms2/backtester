@@ -1,0 +1,16 @@
+{
+  "pair": {
+    "chainId": "solana",
+    "dexId": "raydium",
+    "url": "https://dexscreener.com/solana/pepehighliq",
+    "pairAddress": "PepeHighLiq11111111111111111111111111111",
+    "baseToken": {"address": "PepeMint111", "name": "Pepe", "symbol": "PEPE"},
+    "quoteToken": {"address": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v", "name": "USD Coin", "symbol": "USDC"},
+    "priceNative": "0.00001",
+    "priceUsd": "0.00001",
+    "liquidity": {"usd": 5000000},
+    "volume": {"h24": 1000000, "h6": 200000, "h1": 50000, "m5": 1000},
+    "priceChange": {"h24": 12.5},
+    "pairCreatedAt": 1700000000000
+  }
+}
