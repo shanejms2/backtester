@@ -9,6 +9,17 @@ Timeframe = Literal["1m", "5m", "15m", "30m", "1h", "4h", "1d"]
 
 TIMEFRAMES: Final[tuple[Timeframe, ...]] = get_args(Timeframe)
 
+DOWNSAMPLE_BAR_LIMIT: Final[int] = 20_000
+
+
+def coarser_timeframe(timeframe: Timeframe) -> Timeframe | None:
+    """Next coarser native Timeframe, or None at ``1d``."""
+    index = TIMEFRAMES.index(timeframe)
+    if index + 1 >= len(TIMEFRAMES):
+        return None
+    return TIMEFRAMES[index + 1]
+
+
 TIMEFRAME_DELTA: Final[dict[Timeframe, timedelta]] = {
     "1m": timedelta(minutes=1),
     "5m": timedelta(minutes=5),

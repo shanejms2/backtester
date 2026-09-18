@@ -32,6 +32,10 @@ backtester read EQ:XNAS:AAPL --tf 1d --from 2024-01-01 --to 2024-03-01 --tz Asia
 
 backtester coverage EQ:XNAS:AAPL --tf 1d
 backtester compact
+
+# Visual QA (Plotly HTML in the browser; --no-open writes the file only)
+backtester chart CRYPTO:HYPERLIQUID:HYPE/USDC --tf 1d --tz UTC
+backtester chart --inventory
 ```
 
 Same commands work as `python -m backtester ...`.

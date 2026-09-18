@@ -106,6 +106,17 @@ def test_prune_old_1m_when_1d_exists(tmp_store: ParquetDuckDBStore) -> None:
     assert tmp_store.coverage(inst.instrument_id, "1m", "yahoo") == []
 
 
+def test_list_coverage_inventory(tmp_store: ParquetDuckDBStore) -> None:
+    inst = aapl()
+    tmp_store.update_coverage(inst.instrument_id, "1d", "yahoo", utc(2024, 1, 1), utc(2024, 1, 20))
+    tmp_store.update_coverage(inst.instrument_id, "1h", "yahoo", utc(2024, 1, 2), utc(2024, 1, 3))
+    rows = tmp_store.list_coverage()
+    assert len(rows) == 2
+    ids = {(r.instrument_id, r.timeframe, r.source) for r in rows}
+    assert (inst.instrument_id, "1d", "yahoo") in ids
+    assert (inst.instrument_id, "1h", "yahoo") in ids
+
+
 def test_instrument_alias_persisted(tmp_store: ParquetDuckDBStore) -> None:
     inst = aapl()
     tmp_store.upsert_instrument(inst)

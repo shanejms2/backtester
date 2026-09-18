@@ -20,6 +20,8 @@ dependencies = [
     "python-dotenv>=1.0",
     "exchange-calendars>=4.5",
     "pydantic>=2.9",
+    "plotly>=5.24",
+    "pyyaml>=6.0",
 ]
 
 [project.optional-dependencies]
@@ -80,6 +82,8 @@ module = [
     "exchange_calendars.*",
     "duckdb.*",
     "pyarrow.*",
+    "plotly.*",
+    "yaml",
 ]
 ignore_missing_imports = true
 

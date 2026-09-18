@@ -31,3 +31,45 @@ def test_cli_coverage(tmp_path: Path, monkeypatch, capsys) -> None:  # noqa: ANN
     assert code == 0
     out = capsys.readouterr().out
     assert "EQ:XNAS:AAPL" in out
+
+
+def test_cli_ta_list(capsys) -> None:  # noqa: ANN001
+    code = main(["ta", "list"])
+    assert code == 0
+    out = capsys.readouterr().out.splitlines()
+    assert "sma" in out
+    assert "rsi" in out
+    assert "swing_high" in out
+
+
+def test_cli_strat_list(capsys) -> None:  # noqa: ANN001
+    code = main(["strat", "list"])
+    assert code == 0
+    out = capsys.readouterr().out.splitlines()
+    assert out == ["buy_hold", "sma_cross"]
+
+
+def test_cli_strat_run_missing_coverage(tmp_path: Path, monkeypatch, capsys) -> None:  # noqa: ANN001
+    monkeypatch.setenv("BACKTESTER_DATA_DIR", str(tmp_path / "data"))
+    yaml_path = tmp_path / "gap.yaml"
+    yaml_path.write_text(
+        """name: gap
+timeframe: 1d
+from: 2024-01-01
+source: yahoo
+universe:
+  - id: EQ:XNAS:AAPL
+    class: equity
+    calendar: nyse
+    fee_bps: 0
+runs:
+  - id: bh
+    strategy: buy_hold
+""",
+        encoding="utf-8",
+    )
+    code = main(["strat", "run", str(yaml_path)])
+    assert code == 2
+    err = capsys.readouterr().err
+    assert "ingest" in err
+    assert "EQ:XNAS:AAPL" in err

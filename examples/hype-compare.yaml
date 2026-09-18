@@ -1,0 +1,18 @@
+name: hype-family
+timeframe: 1d
+from: 2024-11-29
+source: hyperliquid          # Spec default; a universe row may override
+rebalance_band: 0.05
+allow_short: true
+universe:
+  - id: CRYPTO:HYPERLIQUID:HYPE/USDC
+    class: crypto
+    calendar: native_24_7
+    fee_bps: 10
+  # additional names are first-class (class / calendar / fee_bps per row)
+runs:
+  - id: bh
+    strategy: buy_hold
+  - id: sma
+    strategy: sma_cross
+    params: {fast: 20, slow: 50, side: long_short}

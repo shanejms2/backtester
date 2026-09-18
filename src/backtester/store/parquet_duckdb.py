@@ -261,6 +261,27 @@ class ParquetDuckDBStore(BarStore):
             for r in rows
         ]
 
+    def list_coverage(self) -> list[CoverageInterval]:
+        """Load every Coverage row, ordered for inventory Chart lanes."""
+        with self._duck_lock:
+            rows = self._conn.execute(
+                """
+                SELECT instrument_id, timeframe, source, start_utc, end_utc
+                FROM coverage
+                ORDER BY instrument_id, timeframe, source, start_utc
+                """
+            ).fetchall()
+        return [
+            CoverageInterval(
+                instrument_id=str(r[0]),
+                timeframe=str(r[1]),  # type: ignore[arg-type]
+                source=str(r[2]),
+                start_utc=ensure_utc(r[3]),
+                end_utc=ensure_utc(r[4]),
+            )
+            for r in rows
+        ]
+
     def update_coverage(
         self,
         instrument_id: str,

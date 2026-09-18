@@ -1,4 +1,4 @@
-"""CLI: ingest, read --tz, coverage, compact."""
+"""CLI: ingest, read --tz, coverage, compact, chart, ta, strat."""
 
 from __future__ import annotations
 
@@ -12,6 +12,12 @@ from backtester.calendar.display import require_zone
 from backtester.domain import IngestRequest
 from backtester.exceptions import BacktesterError, IncompleteHistoryError
 from backtester.ingest.engine import IngestEngine
+from backtester.inspect.chart import (
+    coverage_span,
+    resolve_chart_instrument,
+    write_inventory_chart,
+    write_series_chart,
+)
 from backtester.query.reader import BarReader
 from backtester.settings import load_settings
 from backtester.store.parquet_duckdb import ParquetDuckDBStore
@@ -67,6 +73,43 @@ def _build_parser() -> argparse.ArgumentParser:
     compact.add_argument("--prune", action="store_true", help="Drop old 1m after a native 1h/1d series exists.")
     compact.add_argument("--tz", default=None)
     compact.set_defaults(handler=_cmd_compact)
+
+    chart = sub.add_parser("chart", help="Open a Plotly HTML Chart of stored Bars or Coverage inventory.")
+    chart.add_argument("query", nargs="?", default=None, help="Instrument id or ticker (omit with --inventory).")
+    chart.add_argument("--inventory", action="store_true", help="Coverage lanes for every stored series.")
+    chart.add_argument("--tf", default=None, help="Native Timeframe (required unless --inventory).")
+    chart.add_argument("--from", dest="start", default=None, help="ISO start (default: Coverage start).")
+    chart.add_argument("--to", dest="end", default=None, help="ISO end (default: Coverage end).")
+    chart.add_argument("--tz", default=None)
+    chart.add_argument("--source", default=None)
+    chart.add_argument("--venue", default=None)
+    chart.add_argument(
+        "--class",
+        dest="asset_class",
+        choices=("equity", "crypto", "dex"),
+        default=None,
+    )
+    chart.add_argument("--session", choices=("rth", "eth"), default="rth")
+    chart.add_argument("--no-open", action="store_true", help="Write HTML without opening a browser.")
+    chart.set_defaults(handler=_cmd_chart)
+
+    ta_p = sub.add_parser("ta", help="Technical analysis catalog.")
+    ta_sub = ta_p.add_subparsers(dest="ta_cmd", required=True)
+    ta_list = ta_sub.add_parser("list", help="Print Indicator names (same catalog as backtester.ta).")
+    ta_list.set_defaults(handler=_cmd_ta_list)
+
+    strat_p = sub.add_parser("strat", help="Run Strategies on a stored Panel.")
+    strat_sub = strat_p.add_subparsers(dest="strat_cmd", required=True)
+    strat_list = strat_sub.add_parser("list", help="Print registered Strategy names.")
+    strat_list.set_defaults(handler=_cmd_strat_list)
+    strat_run = strat_sub.add_parser("run", help="Execute every Run in a YAML Spec; print Metrics.")
+    strat_run.add_argument("yaml", help="Path to Spec YAML.")
+    strat_run.set_defaults(handler=_cmd_strat_run)
+    strat_compare = strat_sub.add_parser("compare", help="Compare Runs; optional Plotly equity overlay.")
+    strat_compare.add_argument("yaml", help="Path to Spec YAML.")
+    strat_compare.add_argument("--chart", action="store_true", help="Write a Plotly equity overlay under $TMPDIR.")
+    strat_compare.add_argument("--no-open", action="store_true", help="Write HTML without opening a browser.")
+    strat_compare.set_defaults(handler=_cmd_strat_compare)
     return parser
 
 
@@ -166,6 +209,103 @@ def _cmd_compact(args: argparse.Namespace) -> int:
         pruned = store.prune_hot_1m(hot_days=settings.hot_1m_days)
         print(f"pruned_1m_files={pruned}")
     return 0
+
+
+def _cmd_chart(args: argparse.Namespace) -> int:
+    settings = load_settings()
+    tz = args.tz or settings.display_tz
+    require_zone(tz)
+    store = ParquetDuckDBStore(Path(settings.data_dir))
+    try:
+        if args.inventory:
+            path = write_inventory_chart(store, tz=tz, open_browser=not args.no_open)
+            print(path)
+            return 0
+        if not args.query or not args.tf:
+            print("error: chart requires QUERY and --tf, or --inventory", file=sys.stderr)
+            return 2
+        instrument = resolve_chart_instrument(
+            store,
+            args.query,
+            asset_class=args.asset_class,
+            venue=args.venue,
+        )
+        tf = parse_timeframe(args.tf)
+        span = coverage_span(store, instrument.instrument_id, tf, args.source)
+        if args.start:
+            start = _parse_dt(args.start, tz, is_end=False)
+        elif span:
+            start = span[0]
+        else:
+            print("error: no Coverage; pass --from", file=sys.stderr)
+            return 2
+        if args.end:
+            end = _parse_dt(args.end, tz, is_end=True)
+        elif span:
+            end = span[1]
+        else:
+            end = datetime.now(UTC)
+        path = write_series_chart(
+            store,
+            instrument,
+            tf,
+            start,
+            end,
+            tz=tz,
+            source=args.source,
+            session=args.session,
+            open_browser=not args.no_open,
+        )
+        print(path)
+        return 0
+    finally:
+        store.close()
+
+
+def _cmd_ta_list(_args: argparse.Namespace) -> int:
+    from backtester.ta import available
+
+    for name in available():
+        print(name)
+    return 0
+
+
+def _cmd_strat_list(_args: argparse.Namespace) -> int:
+    from backtester.strategy.registry import list_strategies
+
+    for name in list_strategies():
+        print(name)
+    return 0
+
+
+def _cmd_strat_run(args: argparse.Namespace) -> int:
+    return _strat_execute(args.yaml, chart=False, open_browser=False)
+
+
+def _cmd_strat_compare(args: argparse.Namespace) -> int:
+    return _strat_execute(args.yaml, chart=bool(args.chart), open_browser=not args.no_open)
+
+
+def _strat_execute(yaml_path: str, *, chart: bool, open_browser: bool) -> int:
+    from backtester.strategy.engine import format_metrics_table, run_spec, write_equity_chart
+    from backtester.strategy.spec import load_spec
+
+    settings = load_settings()
+    store = ParquetDuckDBStore(Path(settings.data_dir))
+    try:
+        spec = load_spec(yaml_path)
+        results = run_spec(spec, store)
+        print(format_metrics_table([item.metrics for item in results]))
+        if chart:
+            path = write_equity_chart(
+                spec.name,
+                results,
+                open_browser=open_browser,
+            )
+            print(path)
+        return 0
+    finally:
+        store.close()
 
 
 def _parse_range(start_raw: str, end_raw: str | None, tz: str) -> tuple[datetime, datetime]:

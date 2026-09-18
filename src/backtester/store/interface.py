@@ -50,6 +50,10 @@ class BarStore(ABC):
         """Inclusive UTC ranges already fetched for this triple."""
 
     @abstractmethod
+    def list_coverage(self) -> list[CoverageInterval]:
+        """Every Coverage row in the catalog (inventory / Chart lanes)."""
+
+    @abstractmethod
     def update_coverage(
         self,
         instrument_id: str,

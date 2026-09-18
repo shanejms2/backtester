@@ -37,3 +37,15 @@ class NativeTimeframeError(BacktesterError):
 
 class InvalidBarError(BacktesterError):
     """A Bar failed OHLC / finiteness / non-future checks."""
+
+
+class UnknownStrategyError(BacktesterError):
+    """Spec named a Strategy that is not in the registry."""
+
+
+class InvalidSpecError(BacktesterError):
+    """YAML Spec failed validation or a Run has invalid params."""
+
+
+class MissingCoverageError(BacktesterError):
+    """Requested Panel window is not in Coverage; Ingest is the collector."""
