@@ -22,7 +22,7 @@ Connection settings: `CLICKHOUSE_*` in `.env`. Compose publishes ClickHouse on l
 
 ## Decision (historical v1)
 
-v1 used Hive-partitioned Parquet (ZSTD) under `data/bars/` plus `data/catalog.duckdb` for metadata. That layout may remain on disk as a cold copy after migration; the CLI no longer opens it.
+v1 used Hive-partitioned Parquet (ZSTD) under `data/bars/` plus `data/catalog.duckdb` for metadata. That layout may remain on disk as a cold copy after migration; the CLI no longer opens it. The `ParquetDuckDBStore` Python module was removed after cutover; use `scripts/load_clickhouse_bars.sh` and `scripts/migrate_duckdb_catalog_to_clickhouse.py` for one-shot loads.
 
 ## Consequences
 

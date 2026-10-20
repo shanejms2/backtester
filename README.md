@@ -60,7 +60,7 @@ A Spec is a YAML file: one Universe, one window, several Runs. Every Run shares 
 | `nyse_1600` | NYSE session days. Close is the last price at or before 16:00 ET. Open on that row is 09:30 ET, so the next row's open is the fill. Crypto is read from 1h bars. |
 | `xnse` | NSE session days, stamped 15:30 IST, open 09:15 IST. |
 
-Fills happen at the next bar's raw `open`, and only when the weight change clears the rebalance band. A target of `0` exits. A null target holds. `cash_rate_id` (Yahoo `^IRX`, stored as `EQ:XNAS:IRX`) pays leftover cash `close / 100 / 365`. It is not a universe name.
+Fills happen at the next bar's raw `open`, and only when the weight change clears the rebalance band. A target of `0` exits. A null target holds. `cash_rate_id` (Yahoo `^IRX`, stored as `EQ:XNAS:IRX`) pays leftover cash `(close / 100 / 365) × calendar days` since the previous panel row (so session clocks accrue weekends). It is not a universe name.
 
 `drift: true` lets weights follow price between targets. `drift: false` is constant-mix. A Run can override the Spec.
 

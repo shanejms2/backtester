@@ -1,4 +1,4 @@
-"""BarStore interface: the Store seam. Ingest must not import Parquet paths."""
+"""BarStore interface: the Store seam. Ingest must not import ClickHouse DDL paths."""
 
 from __future__ import annotations
 
@@ -38,7 +38,7 @@ class BarStore(ABC):
         columns: Sequence[str] | None = None,
         source: str | None = None,
     ) -> pl.LazyFrame:
-        """Lazy scan of matching Hive partitions. Predicate-pushes year/month."""
+        """Lazy scan of matching bars in the UTC range (and optional source)."""
 
     @abstractmethod
     def coverage(

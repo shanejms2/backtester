@@ -84,11 +84,11 @@ class Bar(BaseModel):
 
 
 def empty_bars() -> pl.DataFrame:
-    """Empty stored-Bar frame in Parquet column order.
+    """Empty stored-Bar frame in canonical column order.
 
     Normalize returns this when every vendor row is dropped, and the store
     scans and writes the same columns. Living next to ``Bar`` keeps that
-    schema in one place so Normalize does not import the Parquet adapter.
+    schema in one place so Normalize does not import the store adapter.
     """
     return pl.DataFrame(
         schema={

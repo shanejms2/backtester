@@ -25,7 +25,7 @@ class BarReader:
         """Attach to a Store.
 
         Args:
-            store: BarStore implementation (Parquet+DuckDB in v1).
+            store: BarStore implementation (`ClickHouseStore` in production).
         """
         self._store = store
 

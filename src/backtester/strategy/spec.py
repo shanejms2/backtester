@@ -98,7 +98,8 @@ class Spec(BaseModel):
     splits and dividends stay in the Broker's price path.
     ``cash_rate_id`` is a T-bill *yield* series (Yahoo IRX close is an
     annualized percent, e.g. ``5.15`` = 5.15%). It is not a Universe name
-    and is never clustered. Daily cash return is ``close / 100 / 365``.
+    and is never clustered. Cash earns ``(close / 100 / 365) × calendar days``
+    since the previous panel row so session clocks accrue over weekends.
     Flat ``rebalance_band`` remains the default for ``sma_cross``;
     ``band_floor`` / ``band_frac`` / ``half_move`` select the proportional path.
     """

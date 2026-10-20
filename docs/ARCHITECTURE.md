@@ -1,14 +1,15 @@
 # Architecture
 
-Local library and CLI. There is no HTTP API or job scheduler. One process reads `.env`, opens self-hosted ClickHouse (`ClickHouseStore`), and either fetches holes or runs a YAML Spec against bars already stored.
+Local library, CLI, and a **read-only JSON HTTP API** (`backtester serve` / Docker `api`, public HTTPS via nginx — see [API.md](API.md)). There is no job scheduler: ingest and backtests run in-process (or as compose one-shots). One process reads `.env`, opens self-hosted ClickHouse (`ClickHouseStore`), and either fetches holes, serves stored bars, or runs a YAML Spec against bars already stored.
 
-Two pipelines share the store. Ingest writes. The strategy engine only reads.
+Two pipelines share the store. Ingest writes. The strategy engine and the API only read.
 
 ```mermaid
 flowchart LR
   CLI["cli.main"] --> Ingest["IngestEngine"]
   CLI --> Reader["BarReader"]
   CLI --> Strat["run_spec"]
+  API["api FastAPI"] --> Reader
   Ingest --> Adapters["Vendor adapters"]
   Adapters --> Norm["normalize.bars"]
   Norm --> Store["ClickHouseStore"]
@@ -30,7 +31,8 @@ flowchart LR
 | `settings.py` | The five environment variables | Per-run knobs (those are the Spec) |
 | `domain.py` | `Instrument`, `Bar`, `VendorBar`, `IngestRequest`, and the empty Bar frame | Persistence |
 | `catalog/` | Stable ids and aliases | Which pool DexScreener picks |
-| `adapters/` | One vendor protocol each | Timestamps, Coverage, Parquet paths |
+| `adapters/` | One vendor protocol each | Timestamps, Coverage, ClickHouse DDL |
+| `api/` | JSON routes over `BarReader` / catalog | Ingest, strategy runs |
 | `ingest/engine.py` | Hole math, source routing, writes | Resampling |
 | `normalize/bars.py` | Vendor time → UTC, OHLC checks, Yahoo decimal-island repair | Fills |
 | `calendar/` | Venue sessions vs display IANA zones | Stored timezone columns |
@@ -58,7 +60,7 @@ These are recorded in ADRs. One implementation is enough.
 
 Three clocks, never mixed ([ADR-0001](adr/0001-utc-storage-display-tz.md)):
 
-1. **Storage.** Timezone-aware UTC. `ts_utc` is bar open. Hive `year=` / `month=` follow that UTC timestamp.
+1. **Storage.** Timezone-aware UTC. `ts_utc` is bar open. ClickHouse partitions by `(timeframe, toYYYYMM(ts_utc))`.
 2. **Session.** Venue calendar used to decide which missing bars are expected gaps. US equity uses `America/New_York`. NSE uses `Asia/Kolkata`. Crypto and DEX are 24/7 UTC.
 3. **Display.** IANA name on `BarReader.read(tz=...)` and CLI `--tz`. Adds `ts_local`. Abbreviations (`IST`, `EDT`) and fixed offsets fail. Never guessed from the machine when `BACKTESTER_TZ` is unset.
 
@@ -73,7 +75,7 @@ Naive CLI datetimes are interpreted in the display zone (`cli._parse_dt`). Naive
 - A target at `t` does not change the fill at open `t`. The last bar has a target and no fill.
 - Weight `0` is a full exit, including when `half_move` is on. A null weight holds the last weight.
 - `adj_close` is for signals. Fills stay on raw `open`. `total_return: true` scales OHLC by `adj_close / close` before the broker sees the panel.
-- `cash_rate_id` is a yield series. Daily cash return is `close / 100 / 365`. Gross exposure still caps at 1. The rate id is not clustered and is not a universe member.
+- `cash_rate_id` is a yield series. Cash earns `(close / 100 / 365) × calendar days` since the previous panel row (weekends/holidays accrue on session clocks). Gross exposure still caps at 1. The rate id is not clustered and is not a universe member.
 - Flat `rebalance_band` is the default. If `band_floor` or `band_frac` is set, the threshold is `max(band_floor, band_frac * |target|)`.
 - `drift: false` holds the post-band weight constant until the next target. `drift: true` marks dollars through the gap and the open-to-close move, so the next entering weight has drifted with price. A Run may override the Spec.
 
@@ -87,7 +89,7 @@ Decision clocks (`native`, `nyse_1600`, `xnse`) change which timestamps exist on
 - Yahoo and Alpha Vantage session-day holes collapse into one window. CCXT and GeckoTerminal stay paged.
 - A truncated vendor records Coverage for the span written, not the hole requested.
 - DexScreener writes `PairSnapshot` rows, never OHLC synthesized from `priceChange.h24`.
-- Writes take an exclusive `flock` per Hive partition, stage a temp Parquet file, check the row count, then rename.
+- Bar writes are ClickHouse `INSERT` into `ReplacingMergeTree`. Coverage merge is delete-every-row-for-that-triple, then insert the merged intervals (`mutations_sync=1`). Concurrent multi-writer ingest on the same triple is not supported.
 
 ## Strategy invariants
 
@@ -99,7 +101,7 @@ Decision clocks (`native`, `nyse_1600`, `xnse`) change which timestamps exist on
 
 ## What not to split
 
-`prism.py`, `panel.py`, and `parquet_duckdb.py` are long because each is one workflow. Splitting the PRISM day loop, the three decision clocks, or the Parquet write from its DuckDB catalog row would scatter one operation across files. Add a docstring or a private function inside the module before adding a package.
+`prism.py`, `panel.py`, and `store/clickhouse.py` are long because each is one workflow. Splitting the PRISM day loop, the three decision clocks, or the ClickHouse write/coverage path would scatter one operation across files. Add a docstring or a private function inside the module before adding a package.
 
 ## Errors and concurrency
 
@@ -107,4 +109,4 @@ Decision clocks (`native`, `nyse_1600`, `xnse`) change which timestamps exist on
 
 During ingest, `IncompleteHistoryError` and `QuotaError` raised while filling a hole are caught inside `IngestEngine.ingest`, stored as warnings on the result, and Coverage is limited to the span actually written. `QuotaError` raised before that loop (no Alpha Vantage key) is not caught there, so the CLI exits 2. `PermanentVendorError` is not caught in the hole loop either. The CLI also has a local `IncompleteHistoryError` handler around `ingest()`; with the engine catching that type inside the hole loop, that handler does not run for a truncated Alpha Vantage page.
 
-DuckDB access on one store takes an `RLock`. Partition file replacement takes an `flock`. Coverage merge is delete-every-row-for-that-triple, then insert the merged intervals, then commit. There is no unique constraint on `coverage`. Two processes writing the same catalog file are not a supported workflow beyond the partition lock.
+ClickHouse inserts are append-only with `ReplacingMergeTree` dedup on read (`FINAL`). Coverage replace is not transactional across processes. Do not run two writers against the same `(instrument, timeframe, source)` coverage triple.

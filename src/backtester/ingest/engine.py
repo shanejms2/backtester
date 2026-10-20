@@ -50,7 +50,7 @@ class IngestEngine:
         """Wire Store, Catalog, Calendar, and adapters.
 
         Args:
-            store: BarStore seam (Parquet+DuckDB in v1).
+            store: BarStore seam (`ClickHouseStore` in production).
             catalog: Instrument registry. Created on the store when omitted.
             calendar: Venue Session calendar.
             settings: Env-backed settings.

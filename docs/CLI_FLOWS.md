@@ -2,7 +2,9 @@
 
 `cli.main` parses argv, calls the subcommand handler, and turns `BacktesterError` into `error: ...` on stderr with exit code 2. Success is 0.
 
-Every command that touches data loads `Settings`, checks `--tz` when the command has one, then opens `ParquetDuckDBStore` through `_open_store`. The store creates `BACKTESTER_DATA_DIR` on init, so timezone checks happen first. The DuckDB connection closes when the command returns, including on failure after the store was opened.
+Every command that touches data loads `Settings`, checks `--tz` when the command has one, then opens `ClickHouseStore` through `_open_store`. Timezone checks happen first. The ClickHouse client closes when the command returns, including on failure after the store was opened.
+
+`ta list`, `strat list`, and `serve` (API process) do not use the short-lived CLI store pattern the same way: `serve` holds one client for the process lifetime.
 
 `ta list` and `strat list` do not open the store.
 
@@ -49,7 +51,7 @@ sequenceDiagram
 
 ## read
 
-`BarReader` scans Hive partitions that overlap the UTC range. Output always has `ts_utc`. `--tz` adds `ts_local` and `utc_offset` minutes. `--resample` builds a derived series in that zone and does not write it. `--limit` only truncates the printed head (default 20). The `rows=` line is the full frame height.
+`BarReader` scans ClickHouse `bars` for the UTC range. Output always has `ts_utc`. `--tz` adds `ts_local` and `utc_offset` minutes. `--resample` builds a derived series in that zone and does not write it. `--limit` only truncates the printed head (default 20). The `rows=` line is the full frame height.
 
 ## coverage
 
@@ -99,7 +101,7 @@ sequenceDiagram
 
 1. `load_spec` rejects a missing file, a non-mapping document, and unknown keys.
 2. `spec.plugins` entries are imported (`dotted.module` or a `.py` path) so `@register` runs.
-3. One Panel is loaded for the whole Spec. `cash_rate_id` and `fx` are overlays, not extra universe names that get clustered.
+3. One Panel is loaded for the whole Spec. `cash_rate_id` and `fx` are overlays, not extra universe names that get clustered. Cash yield is scaled by calendar days between panel stamps.
 4. Each Run validates `params` with that strategy's pydantic model, emits targets, then `broker.execute`.
 5. Metrics are recomputed so every Run's window starts at `max(ready_bars)`.
 6. `strat run` prints the metrics table and stops.

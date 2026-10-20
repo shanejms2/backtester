@@ -77,7 +77,7 @@ A **view** over `BarReader` and Coverage, not a stored series. Inspect lives in 
 
 ## Store seam
 
-Ingest, Normalize, Calendar, `BarReader`, and Chart talk to a `BarStore` **interface** (`write_batch`, `scan`, `coverage`, `list_coverage`). v1 ships `ParquetDuckDBStore`. A later Postgres/Timescale **adapter** is out of scope for this build.
+Ingest, Normalize, Calendar, `BarReader`, Chart, and the JSON API talk to a `BarStore` **interface** (`write_batch`, `scan`, `coverage`, `list_coverage`). The live adapter is self-hosted **`ClickHouseStore`**. Postgres in compose is reserved for future user data, not bars. Legacy Hive Parquet under `data/bars/` is migration input only (`scripts/load_clickhouse_bars.sh`).
 
 ## Universe
 
@@ -107,7 +107,7 @@ Signed portfolio intent: `instrument_id → weight`. `0` is cash, `+1` full long
 
 ## Broker
 
-Execution **module**. At **next bar open**, rebalance holdings to the previous close’s Target when `|target − held|` exceeds the band. Flat `rebalance_band` is the default (`sma_cross`). Proportional band is `threshold_i = max(band_floor, band_frac * |target_i|)`. `half_move` steps halfway to target; a target of **0** always fully exits. A **null** Target holds the last weight. Spec `drift: true` lets that weight follow price until the next non-null Target resets it (a quarterly 50/50). Default `drift: false` is constant-mix. A Run may set `drift` and override the Spec. Per-class fee on traded notional. Mark equity on close (plus open/close gap). Leftover cash earns `cash_weight * daily_tbill` from Spec `cash_rate_id` (Yahoo IRX close is an annualized percent; daily return = close / 100 / 365). Long, short, flip, and portfolio rebalance are the same path — not a special case per strategy family. See ADR-0004 and ADR-0007.
+Execution **module**. At **next bar open**, rebalance holdings to the previous close’s Target when `|target − held|` exceeds the band. Flat `rebalance_band` is the default (`sma_cross`). Proportional band is `threshold_i = max(band_floor, band_frac * |target_i|)`. `half_move` steps halfway to target; a target of **0** always fully exits. A **null** Target holds the last weight. Spec `drift: true` lets that weight follow price until the next non-null Target resets it (a quarterly 50/50). Default `drift: false` is constant-mix. A Run may set `drift` and override the Spec. Per-class fee on traded notional. Mark equity on close (plus open/close gap). Leftover cash earns `cash_weight * daily_tbill` from Spec `cash_rate_id` (Yahoo IRX close is an annualized percent; period return = `(close / 100 / 365) × calendar days` since the previous panel row so session clocks accrue weekends/holidays). Long, short, flip, and portfolio rebalance are the same path — not a special case per strategy family. See ADR-0004 and ADR-0007.
 
 ## Fill
 

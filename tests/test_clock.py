@@ -11,7 +11,7 @@ import pytest
 
 from backtester.domain import Instrument
 from backtester.strategy.engine import compute_metrics, run_spec
-from backtester.strategy.panel import load_panel
+from backtester.strategy.panel import load_panel, scale_tbill_by_calendar_days
 from backtester.strategy.plugins.static import Static, StaticParams
 from backtester.strategy.spec import load_spec
 from tests.conftest import aapl, btc
@@ -187,6 +187,21 @@ runs:
     assert IRX not in panel["instrument_id"].to_list()
 
 
+def test_scale_tbill_by_calendar_days_weekend_gap() -> None:
+    """Fri→Mon must earn three calendar days, not one panel row."""
+    fri = datetime(2024, 1, 5, 21, 0, tzinfo=UTC)
+    mon = datetime(2024, 1, 8, 21, 0, tzinfo=UTC)
+    frame = pl.DataFrame(
+        {
+            "ts_utc": [fri, mon],
+            "tbill_per_day": [0.01, 0.01],
+        }
+    ).with_columns(pl.col("ts_utc").dt.convert_time_zone("UTC"))
+    out = scale_tbill_by_calendar_days(frame)
+    assert float(out["daily_tbill"][0]) == pytest.approx(0.0)
+    assert float(out["daily_tbill"][1]) == pytest.approx(0.03)
+
+
 def test_cash_rate_all_cash_run_compounds(tmp_store, tmp_path: Path) -> None:  # noqa: ANN001
     eq = aapl()
     stamps = [datetime(2024, 1, 2, 14, 30, tzinfo=UTC) + timedelta(days=i) for i in range(4)]
@@ -226,12 +241,13 @@ runs:
     panel = load_panel(spec, tmp_store)
     assert IRX not in panel["instrument_id"].to_list()
     assert all("IRX" not in iid and not str(iid).endswith(":BIL") for iid in panel["instrument_id"].unique())
-    assert float(panel["daily_tbill"][0]) == pytest.approx(0.01)
+    # First stamp accrues 0; the next three consecutive calendar days each earn 1%.
+    assert float(panel["daily_tbill"][0]) == pytest.approx(0.0)
+    assert float(panel["daily_tbill"][1]) == pytest.approx(0.01)
     result = run_spec(spec, tmp_store)[0]
     assert IRX not in result.targets["instrument_id"].to_list()
     assert result.fills.height == 0
-    # Four bars, each earns 1% on 100% cash.
-    assert float(result.equity["equity"][-1]) == pytest.approx(1.01**4)
+    assert float(result.equity["equity"][-1]) == pytest.approx(1.01**3)
     assert result.metrics.mean_cash == pytest.approx(1.0)
     assert result.metrics.fill_count == 0
 

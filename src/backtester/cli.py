@@ -72,7 +72,7 @@ def _build_parser() -> argparse.ArgumentParser:
     cov.add_argument("--tz", default=None)
     cov.set_defaults(handler=_cmd_coverage)
 
-    compact = sub.add_parser("compact", help="Merge tiny Parquet parts; optionally prune old 1m.")
+    compact = sub.add_parser("compact", help="Store maintenance; optionally prune old 1m.")
     compact.add_argument("--instrument", default=None)
     compact.add_argument("--prune", action="store_true", help="Drop old 1m after a native 1h/1d series exists.")
     compact.add_argument("--tz", default=None)

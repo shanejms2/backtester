@@ -60,15 +60,15 @@ Do not return weights from `ta/`.
 
 ## Change the store
 
-`ParquetDuckDBStore._init_catalog` is the schema. There is no Alembic-style migration. A new column needs:
+`ClickHouseStore` schema lives in `infra/clickhouse/init/01_schema.sql` and is mirrored in `ClickHouseStore._SCHEMA_SQL` for bootstrap. A new column needs:
 
-- the `CREATE TABLE` (new databases),
-- a compatible read path for files written before the column existed (`adj_close` is the pattern: missing column becomes `close`),
-- a test in `tests/test_store.py` that round-trips the column.
+- the `CREATE TABLE` / `ALTER` path (new databases and existing installs),
+- a compatible read path for rows written before the column existed (`adj_close` is the pattern: null means `close`),
+- a test in `tests/test_store.py` that round-trips the column (needs ClickHouse; skips if unavailable).
 
 Do not hold work open across a vendor HTTP call. Fetch a page, normalize, then `write_batch`. Coverage updates after a successful write.
 
-Partition writes stay: lock, write temp, check row count, rename, then delete replaced parts. Coverage updates stay delete-and-insert for that `(instrument, timeframe, source)` triple under the DuckDB lock.
+Bar writes are `INSERT` into `ReplacingMergeTree`. Coverage updates stay delete-and-insert for that `(instrument, timeframe, source)` triple.
 
 ## Change a metric or the stdout table
 
@@ -88,4 +88,4 @@ Partition writes stay: lock, write temp, check row count, rename, then delete re
 | `strat compare` HTML | `$TMPDIR/strat-compare-<name>.html`. Tests use `--no-open` |
 | PRISM internals | `diagnostics: true` writes `prism-diagnostics.parquet` and `.csv` under `$TMPDIR` |
 
-`pytest tests/test_broker.py tests/test_clock.py -q` is the fast check for fill and decision-clock changes. `pytest tests/test_ingest.py tests/test_store.py -q` covers Coverage and Parquet.
+`pytest tests/test_broker.py tests/test_clock.py -q` is the fast check for fill and decision-clock changes (no ClickHouse required for most of those). `pytest tests/test_ingest.py tests/test_store.py -q` covers Coverage and ClickHouse when a server is up.

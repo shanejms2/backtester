@@ -16,7 +16,7 @@ ADR-0005 left T-bill overlay unwired. This ADR wires it as a **cash return**, no
 
 2. **`adj_close`.** Optional Bar / Parquet column. Null means `close`. Yahoo fills Adj Close. Crypto `adj_close = close`. Strategies may read `adj_close`; the Broker still fills on raw `open`.
 
-3. **Cash overlay.** Spec `cash_rate_id` points at a yield series (Yahoo `^IRX`, close quoted as an annualized **percent**). Daily cash return is `close / 100 / 365`. The Broker adds `cash_weight * daily_tbill` to the equity return. Gross still caps at 1; leftover is cash. The rate id is **not** a Universe name and is never clustered.
+3. **Cash overlay.** Spec `cash_rate_id` points at a yield series (Yahoo `^IRX`, close quoted as an annualized **percent**). The per-calendar-day factor is `close / 100 / 365`. Panel attachment multiplies by **calendar days since the previous panel stamp** (first stamp accrues 0) so `nyse_1600` / `xnse` still earn over weekends and holidays. The Broker adds `cash_weight * daily_tbill` (that period return) to the equity return. Gross still caps at 1; leftover is cash. The rate id is **not** a Universe name and is never clustered.
 
 4. **Proportional band + half-move.** `threshold_i = max(band_floor, band_frac * |target_i|)` when either knob is set; otherwise flat `rebalance_band` (sma_cross default). When a trade triggers, `half_move` does `held += 0.5 * (target − held)`. Target `0` always fully exits.
 

@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "backtester"
 version = "0.1.0"
-description = "Coverage-driven market data engine: UTC bars, Hive Parquet + DuckDB, thin vendor adapters."
+description = "Coverage-driven market data engine: UTC bars in ClickHouse, thin vendor adapters, JSON API."
 readme = "README.md"
 requires-python = ">=3.12"
 license = { text = "MIT" }

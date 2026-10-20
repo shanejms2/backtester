@@ -22,9 +22,11 @@ def execute(
     rebalance band is hysteresis vs last held Target. A **null** Target holds
     the last weight; with ``drift`` that weight follows price until the next
     Target. A target of **0** fully exits (even with ``half_move``). Cash is
-    leftover when gross exposure is under 1, and
-    earns ``cash_weight * daily_tbill`` (IRX percent / 100 / 365). Equity
-    compounds in Polars (``cum_prod`` of gap × bar − fee + cash).
+    leftover when gross exposure is under 1, and earns
+    ``cash_weight * daily_tbill``. ``daily_tbill`` is the period T-bill return
+    for the gap ending at this stamp (IRX percent / 100 / 365 × calendar days
+    since the previous panel row). Equity compounds in Polars
+    (``cum_prod`` of gap × bar − fee + cash).
 
     Args:
         panel: Long OHLCV plus ``fee_bps`` (default 0) and optional

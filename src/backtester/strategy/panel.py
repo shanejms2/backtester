@@ -376,10 +376,13 @@ def _convert_to_usd(panel: pl.DataFrame, spec: Spec, store: BarStore) -> pl.Data
 
 
 def _attach_cash_rate(panel: pl.DataFrame, spec: Spec, store: BarStore) -> pl.DataFrame:
-    """Broadcast daily T-bill return. Yahoo IRX close is an annualized percent.
+    """Broadcast period T-bill return onto each panel stamp.
 
-    ``daily_tbill = close / 100 / 365``. Missing ``cash_rate_id`` yields 0.
-    The rate series is not a Universe name and is never clustered.
+    Yahoo IRX close is an annualized percent. The per-calendar-day factor is
+    ``close / 100 / 365``. That factor is multiplied by **calendar days since
+    the previous panel row** so session clocks (``nyse_1600``, ``xnse``) still
+    earn over weekends and holidays. The first stamp accrues 0. Missing
+    ``cash_rate_id`` yields 0. The rate series is not a Universe name.
     """
     if not spec.cash_rate_id:
         return panel.with_columns(pl.lit(0.0).alias("daily_tbill"))
@@ -395,15 +398,39 @@ def _attach_cash_rate(panel: pl.DataFrame, spec: Spec, store: BarStore) -> pl.Da
     rates = (
         got.select(
             pl.col("ts_utc").alias("rate_ts"),
-            (pl.col("close") / _IRX_PERCENT / _IRX_DAYS).alias("daily_tbill"),
+            (pl.col("close") / _IRX_PERCENT / _IRX_DAYS).alias("tbill_per_day"),
         )
         .sort("rate_ts")
         .with_columns(pl.col("rate_ts").dt.convert_time_zone("UTC"))
     )
     stamps = panel.select("ts_utc").unique().sort("ts_utc")
     joined = stamps.join_asof(rates, left_on="ts_utc", right_on="rate_ts", strategy="backward")
-    joined = joined.select("ts_utc", pl.col("daily_tbill").fill_null(0.0))
+    joined = scale_tbill_by_calendar_days(joined)
     return panel.join(joined, on="ts_utc", how="left").with_columns(pl.col("daily_tbill").fill_null(0.0))
+
+
+def scale_tbill_by_calendar_days(frame: pl.DataFrame) -> pl.DataFrame:
+    """Turn a per-day T-bill factor into a period return via calendar gaps.
+
+    Expects ``ts_utc`` and ``tbill_per_day``. Returns ``ts_utc`` and
+    ``daily_tbill`` (period return for the gap ending at that stamp). The
+    first stamp gets 0 so cash starts at the panel open; Fri→Mon earns ~3 days.
+    """
+    return (
+        frame.sort("ts_utc")
+        .with_columns(
+            (
+                (pl.col("ts_utc") - pl.col("ts_utc").shift(1)).dt.total_seconds() / 86_400.0
+            )
+            .fill_null(0.0)
+            .alias("_cash_days"),
+            pl.col("tbill_per_day").fill_null(0.0).alias("tbill_per_day"),
+        )
+        .select(
+            "ts_utc",
+            (pl.col("tbill_per_day") * pl.col("_cash_days")).alias("daily_tbill"),
+        )
+    )
 
 
 def _nyse_holiday_dates(frame: pl.DataFrame) -> list[date]:
