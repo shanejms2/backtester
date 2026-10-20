@@ -8,11 +8,11 @@ import polars as pl
 
 from backtester.cli import main
 from backtester.inspect.chart import write_inventory_chart, write_series_chart
-from backtester.store.parquet_duckdb import ParquetDuckDBStore
+from backtester.store.clickhouse import ClickHouseStore
 from tests.conftest import aapl, bars_frame, utc
 
 
-def test_inventory_html_contains_coverage(tmp_store: ParquetDuckDBStore, tmp_path: Path) -> None:
+def test_inventory_html_contains_coverage(tmp_store: ClickHouseStore, tmp_path: Path) -> None:
     inst = aapl()
     tmp_store.upsert_instrument(inst)
     start, end = utc(2024, 1, 2, 14, 30), utc(2024, 1, 16, 14, 30)
@@ -26,7 +26,7 @@ def test_inventory_html_contains_coverage(tmp_store: ParquetDuckDBStore, tmp_pat
     assert "Coverage inventory" in html
 
 
-def test_series_html_marks_suspect(tmp_store: ParquetDuckDBStore, tmp_path: Path) -> None:
+def test_series_html_marks_suspect(tmp_store: ClickHouseStore, tmp_path: Path) -> None:
     inst = aapl()
     tmp_store.upsert_instrument(inst)
     ts = utc(2024, 1, 16, 14, 30)
@@ -50,16 +50,13 @@ def test_series_html_marks_suspect(tmp_store: ParquetDuckDBStore, tmp_path: Path
     assert "suspect" in html
 
 
-def test_cli_chart_no_open(tmp_path: Path, monkeypatch, capsys) -> None:  # noqa: ANN001
-    data = tmp_path / "data"
-    monkeypatch.setenv("BACKTESTER_DATA_DIR", str(data))
-    store = ParquetDuckDBStore(data)
+def test_cli_chart_no_open(tmp_store: ClickHouseStore, monkeypatch, capsys) -> None:  # noqa: ANN001
+    monkeypatch.setenv("CLICKHOUSE_DATABASE", tmp_store.database)
     inst = aapl()
-    store.upsert_instrument(inst)
+    tmp_store.upsert_instrument(inst)
     ts = utc(2024, 1, 16, 14, 30)
-    store.write_batch(bars_frame(inst, [ts], source="yahoo", timeframe="1d"))
-    store.update_coverage(inst.instrument_id, "1d", "yahoo", ts, ts)
-    store.close()
+    tmp_store.write_batch(bars_frame(inst, [ts], source="yahoo", timeframe="1d"))
+    tmp_store.update_coverage(inst.instrument_id, "1d", "yahoo", ts, ts)
     code = main(
         [
             "chart",
@@ -88,13 +85,10 @@ def test_cli_chart_rejects_ist(tmp_path: Path, monkeypatch, capsys) -> None:  # 
     assert "IST" in err or "IANA" in err or "abbreviation" in err.lower()
 
 
-def test_cli_inventory_no_open(tmp_path: Path, monkeypatch, capsys) -> None:  # noqa: ANN001
-    data = tmp_path / "data"
-    monkeypatch.setenv("BACKTESTER_DATA_DIR", str(data))
-    store = ParquetDuckDBStore(data)
+def test_cli_inventory_no_open(tmp_store: ClickHouseStore, monkeypatch, capsys) -> None:  # noqa: ANN001
+    monkeypatch.setenv("CLICKHOUSE_DATABASE", tmp_store.database)
     inst = aapl()
-    store.update_coverage(inst.instrument_id, "1d", "yahoo", utc(2024, 1, 2), utc(2024, 1, 16))
-    store.close()
+    tmp_store.update_coverage(inst.instrument_id, "1d", "yahoo", utc(2024, 1, 2), utc(2024, 1, 16))
     code = main(["chart", "--inventory", "--tz", "UTC", "--no-open"])
     assert code == 0
     html = Path(capsys.readouterr().out.strip()).read_text(encoding="utf-8")

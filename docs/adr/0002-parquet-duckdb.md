@@ -1,37 +1,32 @@
-# ADR-0002: Hive-partitioned Parquet (ZSTD) + DuckDB catalog
+# ADR-0002: Store persistence
 
 ## Status
 
-Accepted
+Superseded for the engine store by self-hosted **ClickHouse**. Hive Parquet + DuckDB was v1; the `BarStore` seam remains.
 
 ## Context
 
-The engine is local, as-needed, and append-mostly. OHLCV scans filter by instrument, timeframe, and time range. A always-on Postgres (or Timescale) server would add install, migrate, backup, and pooling cost without buying capability we lack on a single workstation. Airflow would add a DAG scheduler for a flow that is Coverage-first, not a nightly job grid.
+The engine is local/VPS, as-needed, and append-mostly. OHLCV scans filter by instrument, timeframe, and time range. Coverage-driven ingest needs a small catalog (instruments, aliases, coverage). A always-on Postgres for bars would add cost without matching columnar scan speed. Airflow is out of scope for hole-filling Requests.
 
-## Decision
+## Decision (current)
 
-v1 persistence is **Hive-partitioned Parquet (ZSTD) + DuckDB catalog**.
+**ClickHouse** (`ClickHouseStore`) holds:
 
-Hive folders encode filter keys:
+- `bars` — OHLCV (`ReplacingMergeTree`)
+- `coverage`, `instruments`, `aliases`
+- `snapshots`, `snapshot_polls`
 
-```
-data/bars/asset_class=equity/venue=XNAS/symbol=AAPL/timeframe=1d/year=2024/month=01/*.parquet
-data/bars/asset_class=crypto/venue=binance/symbol=BTC-USDT/timeframe=1h/year=2024/month=01/*.parquet
-data/bars/asset_class=dex/venue=solana/symbol=PAIRADDR/timeframe=1h/year=2024/month=01/*.parquet
-data/snapshots/source=dexscreener/chain=solana/pair=PAIRADDR/year=2026/month=09/*.parquet
-```
+Connection settings: `CLICKHOUSE_*` in `.env`. Compose publishes ClickHouse on localhost only. Postgres remains reserved for future user data, not bars.
 
-A read of AAPL 1d for Jan 2024 opens that month’s files only. Parquet is columnar: a `BarReader` that needs `ts_utc, close` does not load `volume`. ZSTD plus dictionary encoding keeps low-cardinality columns small.
+`BarStore` (`write_batch`, `scan`, `coverage`, …) stays the seam. Ingest must not import table DDL. `compact` is a no-op (server merges parts).
 
-DuckDB is an embedded file, not a server. It stores `instruments`, `coverage`, and `files` (path, bytes, row_count, min/max `ts_utc`) and can SQL-scan Parquet in place.
+## Decision (historical v1)
 
-The **Store interface** (`write_batch`, `scan`, `coverage`) is the **seam** for a later Postgres/Timescale **adapter**. Ingest must not import Parquet paths. This build does not implement Postgres.
-
-Not Airflow: a Request asks for a range; Ingest fetches holes, then stops. Revisit a scheduler only if job topology becomes a product.
+v1 used Hive-partitioned Parquet (ZSTD) under `data/bars/` plus `data/catalog.duckdb` for metadata. That layout may remain on disk as a cold copy after migration; the CLI no longer opens it.
 
 ## Consequences
 
-- Compaction merges tiny parts in a partition. Retention may drop old dense 1m once a native 1h/1d series exists; Coverage is updated so ingest does not refill deleted 1m.
-- File lock per partition so two Requests cannot corrupt a write.
-- Writes are stage → validate row counts → atomic rename → Coverage update.
-- Gitignore `data/` (and `.env`).
+- One always-on ClickHouse process (memory-capped in compose).
+- Coverage merge/drop still runs in Python; mutations use `mutations_sync=1`.
+- `prune_hot_1m` deletes old 1m rows via `ALTER DELETE` when 1h/1d coverage exists.
+- Migrate catalog once with `scripts/migrate_duckdb_catalog_to_clickhouse.py`. Bars load via `scripts/load_clickhouse_bars.sh` or ingest.

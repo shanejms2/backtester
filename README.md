@@ -1,6 +1,6 @@
 # backtester
 
-Coverage-driven market data engine and causal strategy runner. Collect stock and crypto bars as needed, normalize them into one schema, persist them as Hive Parquet, and read them through `BarReader`. Strategies run on that stored Panel. They do not fetch.
+Coverage-driven market data engine and causal strategy runner. Collect stock and crypto bars as needed, normalize them into one schema, persist them in self-hosted ClickHouse, and read them through `BarReader`. Strategies run on that stored Panel. They do not fetch.
 
 Storage is UTC only. Session clocks belong to the venue (NYSE in `America/New_York`, NSE in `Asia/Kolkata`, crypto 24/7 UTC). Display timezone is whatever IANA name you pass at read time.
 
@@ -74,6 +74,20 @@ pytest
 
 Tests use JSON fixtures under `tests/fixtures/`. They do not call vendors and they do not read `.env`. Chart and compare tests pass `--no-open`. GitHub Actions runs `ruff`, `mypy`, and `pytest` on Python 3.12 with an empty `ALPHAVANTAGE_API_KEY`.
 
+## JSON API (public HTTPS)
+
+Read-only JSON over stored bars. See [docs/API.md](docs/API.md).
+
+```bash
+# set BACKTESTER_API_KEY in .env, then:
+docker compose up -d --build api
+curl -sS http://127.0.0.1:8088/health
+curl -sS -H "X-API-Key: $BACKTESTER_API_KEY" \
+  "http://127.0.0.1:8088/v1/bars?instrument_id=EQ:XNAS:AAPL&tf=1d&from=2024-01-01&to=2024-03-01"
+```
+
+Public host: https://backtester-api.shanejames.dev (nginx + Certbot; steps in `docs/API.md`).
+
 ## Configuration
 
 | Variable | Meaning |
@@ -83,6 +97,8 @@ Tests use JSON fixtures under `tests/fixtures/`. They do not call vendors and th
 | `BACKTESTER_DATA_DIR` | Hive root (`data/` by default, gitignored). |
 | `BACKTESTER_HOT_1M_DAYS` | Retention window for dense 1m. |
 | `BACKTESTER_AV_PREMIUM` | `1` if the AV key can use `outputsize=full` daily / crypto intraday. |
+| `BACKTESTER_API_KEY` | Required for compose `api` / public HTTPS (`X-API-Key` header). |
+| `BACKTESTER_API_MAX_BARS` | Max rows per `/v1/bars` response (default 10000). |
 
 ## Development
 
@@ -100,5 +116,7 @@ pytest
 | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | Pipelines, seams, clocks, what not to split |
 | [docs/CODEBASE_MAP.md](docs/CODEBASE_MAP.md) | Where each module lives and where to edit |
 | [docs/CLI_FLOWS.md](docs/CLI_FLOWS.md) | What each command does, including errors |
-| [docs/STORE.md](docs/STORE.md) | Parquet layout and DuckDB catalog tables |
+| [docs/STORE.md](docs/STORE.md) | ClickHouse tables (bars, coverage, catalog) |
+| [docs/API.md](docs/API.md) | Public HTTPS JSON API |
 | [docs/DEVELOPER_GUIDE.md](docs/DEVELOPER_GUIDE.md) | Add a strategy, indicator, adapter, or test |
+| [observability/README.md](observability/README.md) | Project Grafana / Loki / Alloy / Prometheus |

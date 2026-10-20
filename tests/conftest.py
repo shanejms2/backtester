@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import os
 from collections.abc import Iterator
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
@@ -12,7 +13,7 @@ import pytest
 
 from backtester.catalog.instruments import InstrumentCatalog
 from backtester.domain import Instrument, VendorBar
-from backtester.store.parquet_duckdb import ParquetDuckDBStore
+from backtester.store.clickhouse import ClickHouseStore
 from backtester.timeframes import Timeframe
 
 FIXTURES = Path(__file__).parent / "fixtures"
@@ -23,11 +24,29 @@ def load_json(name: str) -> object:
     return json.loads((FIXTURES / name).read_text(encoding="utf-8"))
 
 
+def _clickhouse_store(*, database: str | None = None) -> ClickHouseStore:
+    return ClickHouseStore(
+        host=os.environ.get("CLICKHOUSE_HOST", "127.0.0.1"),
+        port=int(os.environ.get("CLICKHOUSE_PORT", "8123")),
+        username=os.environ.get("CLICKHOUSE_USER", "default"),
+        password=os.environ.get("CLICKHOUSE_PASSWORD", ""),
+        database=database or os.environ.get("CLICKHOUSE_TEST_DATABASE", "backtester_test"),
+    )
+
+
 @pytest.fixture
-def tmp_store(tmp_path: Path) -> Iterator[ParquetDuckDBStore]:
-    store = ParquetDuckDBStore(tmp_path / "data")
+def tmp_store() -> Iterator[ClickHouseStore]:
+    """Empty ClickHouse database for one test. Requires a running server."""
+    try:
+        store = _clickhouse_store()
+        store.truncate_all()
+    except Exception as exc:  # noqa: BLE001 — surface skip reason
+        pytest.skip(f"ClickHouse unavailable: {exc}")
     yield store
-    store.close()
+    try:
+        store.truncate_all()
+    finally:
+        store.close()
 
 
 @pytest.fixture

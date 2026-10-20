@@ -7,7 +7,6 @@ import sys
 from collections.abc import Iterator, Sequence
 from contextlib import contextmanager
 from datetime import UTC, datetime, timedelta
-from pathlib import Path
 
 from backtester.calendar.display import require_zone
 from backtester.domain import IngestRequest
@@ -21,7 +20,7 @@ from backtester.inspect.chart import (
 )
 from backtester.query.reader import BarReader
 from backtester.settings import Settings, load_settings
-from backtester.store.parquet_duckdb import ParquetDuckDBStore
+from backtester.store.clickhouse import ClickHouseStore
 from backtester.timeframes import Timeframe, parse_timeframe
 
 
@@ -115,6 +114,11 @@ def _build_parser() -> argparse.ArgumentParser:
     strat_compare.add_argument("--chart", action="store_true", help="Write a Plotly equity overlay under $TMPDIR.")
     strat_compare.add_argument("--no-open", action="store_true", help="Write HTML without opening a browser.")
     strat_compare.set_defaults(handler=_cmd_strat_compare)
+
+    serve = sub.add_parser("serve", help="Run the read-only JSON API (localhost; nginx for HTTPS).")
+    serve.add_argument("--host", default=None, help="Bind host (default BACKTESTER_API_HOST or 127.0.0.1).")
+    serve.add_argument("--port", type=int, default=None, help="Bind port (default BACKTESTER_API_PORT or 8088).")
+    serve.set_defaults(handler=_cmd_serve)
     return parser
 
 
@@ -130,13 +134,18 @@ def _add_common(parser: argparse.ArgumentParser) -> None:
 
 
 @contextmanager
-def _open_store(settings: Settings) -> Iterator[ParquetDuckDBStore]:
-    """Open the Hive store and close the DuckDB connection when the command ends.
+def _open_store(settings: Settings) -> Iterator[ClickHouseStore]:
+    """Open the ClickHouse store and close the client when the command ends.
 
-    Callers validate ``--tz`` before entering. ``ParquetDuckDBStore`` creates
-    the data directory on init, so a bad timezone must not open the store.
+    Callers validate ``--tz`` before entering so a bad timezone never connects.
     """
-    store = ParquetDuckDBStore(Path(settings.data_dir))
+    store = ClickHouseStore(
+        host=settings.clickhouse_host,
+        port=settings.clickhouse_port,
+        username=settings.clickhouse_user,
+        password=settings.clickhouse_password.get_secret_value(),
+        database=settings.clickhouse_database,
+    )
     try:
         yield store
     finally:
@@ -279,6 +288,14 @@ def _cmd_chart(args: argparse.Namespace) -> int:
         return 0
 
 
+def _cmd_serve(args: argparse.Namespace) -> int:
+    from backtester.api.app import run_server
+
+    settings = load_settings()
+    run_server(host=args.host, port=args.port, settings=settings)
+    return 0
+
+
 def _cmd_ta_list(_args: argparse.Namespace) -> int:
     from backtester.ta import available
 
@@ -345,7 +362,7 @@ def _parse_dt(raw: str, tz: str, *, is_end: bool) -> datetime:
     return parsed
 
 
-def _infer_sources(store: ParquetDuckDBStore, instrument_id: str, timeframe: Timeframe) -> list[str]:
+def _infer_sources(store: ClickHouseStore, instrument_id: str, timeframe: Timeframe) -> list[str]:
     # Probe common sources; Coverage rows are per source.
     found: list[str] = []
     for source in ("yahoo", "bhavcopy", "alphavantage", "binance", "geckoterminal", "dexscreener", "hyperliquid"):

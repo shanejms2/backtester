@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from collections.abc import Iterator
 from datetime import UTC, datetime, timedelta
+from pathlib import Path
 from zoneinfo import ZoneInfo
 
 from backtester.adapters.base import SourceAdapter
@@ -12,7 +13,7 @@ from backtester.catalog.instruments import InstrumentCatalog
 from backtester.domain import IngestRequest, Instrument, PairSnapshot, VendorBar
 from backtester.ingest.engine import IngestEngine
 from backtester.settings import Settings
-from backtester.store.parquet_duckdb import ParquetDuckDBStore
+from backtester.store.clickhouse import ClickHouseStore
 from backtester.timeframes import Timeframe
 from tests.conftest import aapl, btc, pepe_pool, utc, vendor_bar
 
@@ -81,24 +82,25 @@ class FakeDex(SourceAdapter):
 
 
 def _engine(
-    store: ParquetDuckDBStore,
+    store: ClickHouseStore,
     adapters: dict[str, SourceAdapter],
     *,
     dex: FakeDex | None = None,
+    data_dir: Path | None = None,
 ) -> IngestEngine:
     cat = InstrumentCatalog(store)
     return IngestEngine(
         store,
         catalog=cat,
         calendar=SessionCalendar(),
-        settings=Settings(data_dir=store.root),
+        settings=Settings(data_dir=data_dir or Path("data")),
         adapters=adapters,
         dex_resolver=dex,
         now=lambda: datetime(2025, 6, 1, tzinfo=UTC),
     )
 
 
-def test_idempotent_second_request_is_noop(tmp_store: ParquetDuckDBStore) -> None:
+def test_idempotent_second_request_is_noop(tmp_store: ClickHouseStore) -> None:
     inst = aapl()
     tmp_store.upsert_instrument(inst)
     ts = datetime(2025, 1, 2, 14, 30, tzinfo=UTC)
@@ -120,7 +122,7 @@ def test_idempotent_second_request_is_noop(tmp_store: ParquetDuckDBStore) -> Non
     assert fake.calls == 1
 
 
-def test_yahoo_1d_coalesces_session_holes(tmp_store: ParquetDuckDBStore) -> None:
+def test_yahoo_1d_coalesces_session_holes(tmp_store: ClickHouseStore) -> None:
     inst = aapl()
     tmp_store.upsert_instrument(inst)
     fake = FakeAdapter("yahoo", [])
@@ -138,7 +140,7 @@ def test_yahoo_1d_coalesces_session_holes(tmp_store: ParquetDuckDBStore) -> None
     assert fake.calls == 1
 
 
-def test_equity_weekend_not_fetched(tmp_store: ParquetDuckDBStore) -> None:
+def test_equity_weekend_not_fetched(tmp_store: ClickHouseStore) -> None:
     inst = aapl()
     tmp_store.upsert_instrument(inst)
     fake = FakeAdapter("yahoo", [])
@@ -157,7 +159,7 @@ def test_equity_weekend_not_fetched(tmp_store: ParquetDuckDBStore) -> None:
     assert fake.calls == 0
 
 
-def test_crypto_weekend_fetched(tmp_store: ParquetDuckDBStore) -> None:
+def test_crypto_weekend_fetched(tmp_store: ClickHouseStore) -> None:
     inst = btc()
     tmp_store.upsert_instrument(inst)
     ts = utc(2025, 1, 4, 12)
@@ -178,7 +180,7 @@ def test_crypto_weekend_fetched(tmp_store: ParquetDuckDBStore) -> None:
     assert result.rows_written == 1
 
 
-def test_pair_created_at_clips_coverage(tmp_store: ParquetDuckDBStore) -> None:
+def test_pair_created_at_clips_coverage(tmp_store: ClickHouseStore) -> None:
     inst = pepe_pool()
     tmp_store.upsert_instrument(inst)
     created = inst.pair_created_at
@@ -208,7 +210,7 @@ def test_pair_created_at_clips_coverage(tmp_store: ParquetDuckDBStore) -> None:
     assert fake.ranges[0][0] >= created
 
 
-def test_snapshots_do_not_write_bars(tmp_store: ParquetDuckDBStore) -> None:
+def test_snapshots_do_not_write_bars(tmp_store: ClickHouseStore) -> None:
     inst = pepe_pool()
     tmp_store.upsert_instrument(inst)
     dex = FakeDex(inst)
@@ -229,7 +231,7 @@ def test_snapshots_do_not_write_bars(tmp_store: ParquetDuckDBStore) -> None:
     assert bars.height == 0
 
 
-def test_partial_flag_on_live_last_bar(tmp_store: ParquetDuckDBStore) -> None:
+def test_partial_flag_on_live_last_bar(tmp_store: ClickHouseStore) -> None:
     inst = btc()
     tmp_store.upsert_instrument(inst)
     now = datetime(2025, 6, 1, 10, 30, tzinfo=UTC)
@@ -239,7 +241,7 @@ def test_partial_flag_on_live_last_bar(tmp_store: ParquetDuckDBStore) -> None:
         tmp_store,
         catalog=InstrumentCatalog(tmp_store),
         adapters={"binance": fake},
-        settings=Settings(data_dir=tmp_store.root),
+        settings=Settings(data_dir=Path("data")),
         now=lambda: now,
     )
     engine.ingest(

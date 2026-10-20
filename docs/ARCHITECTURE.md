@@ -1,6 +1,6 @@
 # Architecture
 
-Local library and CLI. There is no HTTP server, database server, or job scheduler. One process reads `.env`, opens `data/catalog.duckdb`, and either fetches holes or runs a YAML Spec against bars already on disk.
+Local library and CLI. There is no HTTP API or job scheduler. One process reads `.env`, opens self-hosted ClickHouse (`ClickHouseStore`), and either fetches holes or runs a YAML Spec against bars already stored.
 
 Two pipelines share the store. Ingest writes. The strategy engine only reads.
 
@@ -11,7 +11,7 @@ flowchart LR
   CLI --> Strat["run_spec"]
   Ingest --> Adapters["Vendor adapters"]
   Adapters --> Norm["normalize.bars"]
-  Norm --> Store["ParquetDuckDBStore"]
+  Norm --> Store["ClickHouseStore"]
   Ingest --> Cal["SessionCalendar"]
   Ingest --> Cat["InstrumentCatalog"]
   Strat --> Panel["load_panel"]
@@ -34,7 +34,7 @@ flowchart LR
 | `ingest/engine.py` | Hole math, source routing, writes | Resampling |
 | `normalize/bars.py` | Vendor time → UTC, OHLC checks, Yahoo decimal-island repair | Fills |
 | `calendar/` | Venue sessions vs display IANA zones | Stored timezone columns |
-| `store/` | Hive Parquet, DuckDB catalog, locks, compaction | Strategy weights |
+| `store/` | ClickHouse bars + catalog + snapshots | Strategy weights |
 | `query/reader.py` | Scans, `ts_local`, derived resample | Fetching |
 | `strategy/spec.py` | YAML contract | Execution |
 | `strategy/panel.py` | Coverage check, decision clock, FX, cash yield | Targets |
@@ -48,7 +48,7 @@ flowchart LR
 
 These are recorded in ADRs. One implementation is enough.
 
-- **`BarStore`** ([ADR-0002](adr/0002-parquet-duckdb.md)). Ingest, `BarReader`, and the strategy engine depend on the interface. `ParquetDuckDBStore` is the only adapter. The CLI constructs it directly.
+- **`BarStore`** ([ADR-0002](adr/0002-parquet-duckdb.md)). Ingest, `BarReader`, and the strategy engine depend on the interface. `ClickHouseStore` is the adapter. The CLI constructs it directly.
 - **`Strategy` + registry** ([ADR-0005](adr/0005-strategy-plugins.md)). The engine looks up a name. It does not import `sma_cross` to run it. Built-ins register on import of `strategy.plugins`. Extra plugins load from `spec.plugins` via `importlib`.
 - **`backtester.ta`** ([ADR-0006](adr/0006-ta-module.md)). Public functions, grouped by `instrument_id`. Not a second registry.
 

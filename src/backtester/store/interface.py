@@ -15,8 +15,8 @@ from backtester.timeframes import Timeframe
 class BarStore(ABC):
     """Persistence seam for Bars, Coverage, snapshots, and Instrument records.
 
-    v1 implementation is Parquet + DuckDB. A later Postgres adapter sits here;
-    one implementation is a hypothetical seam, two would make it real.
+    Implementation is self-hosted ClickHouse (`ClickHouseStore`).
+    Postgres is reserved for future user data, not bars.
     """
 
     @abstractmethod

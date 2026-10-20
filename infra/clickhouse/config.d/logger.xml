@@ -1,0 +1,7 @@
+<!-- Send server logs to stdout so Alloy/Docker can collect them. -->
+<clickhouse>
+    <logger>
+        <level>information</level>
+        <console>true</console>
+    </logger>
+</clickhouse>

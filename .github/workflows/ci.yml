@@ -14,6 +14,21 @@ jobs:
   check:
     name: lint-typecheck-test
     runs-on: ubuntu-latest
+    services:
+      clickhouse:
+        image: clickhouse/clickhouse-server:24.8
+        ports:
+          - 8123:8123
+        env:
+          CLICKHOUSE_DB: backtester_test
+          CLICKHOUSE_USER: default
+          CLICKHOUSE_PASSWORD: test
+          CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT: "1"
+        options: >-
+          --health-cmd "wget -qO- http://127.0.0.1:8123/ping | grep -q Ok"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 20
     steps:
       - uses: actions/checkout@v4
 
@@ -37,5 +52,9 @@ jobs:
       - name: Pytest
         run: pytest
         env:
-          # Tests use fixtures only. Do not inject live vendor keys into CI.
           ALPHAVANTAGE_API_KEY: ""
+          CLICKHOUSE_HOST: 127.0.0.1
+          CLICKHOUSE_PORT: "8123"
+          CLICKHOUSE_USER: default
+          CLICKHOUSE_PASSWORD: test
+          CLICKHOUSE_TEST_DATABASE: backtester_test

@@ -1,0 +1,107 @@
+name: backtester-obs
+
+networks:
+  default:
+  backtester:
+    external: true
+    name: backtester_default
+
+services:
+  loki:
+    image: grafana/loki:3.4.2
+    restart: unless-stopped
+    mem_limit: 256m
+    ports:
+      - "127.0.0.1:3101:3100"
+    volumes:
+      - ./config/loki/loki.yml:/etc/loki/loki.yml:ro
+      - loki_data:/loki
+    command: -config.file=/etc/loki/loki.yml
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:3100/ready | grep -q ready"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 20s
+
+  prometheus:
+    image: prom/prometheus:v2.55.1
+    restart: unless-stopped
+    mem_limit: 256m
+    ports:
+      - "127.0.0.1:9091:9090"
+    networks:
+      - default
+      - backtester
+    volumes:
+      - ./config/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.path=/prometheus
+      - --storage.tsdb.retention.time=14d
+      - --web.enable-lifecycle
+    depends_on:
+      - alloy
+      - postgres-exporter
+
+  postgres-exporter:
+    image: prometheuscommunity/postgres-exporter:v0.15.0
+    restart: unless-stopped
+    mem_limit: 64m
+    networks:
+      - default
+      - backtester
+    env_file:
+      - ../.env
+    environment:
+      # Service name on the backtester compose network.
+      DATA_SOURCE_URI: postgres:5432/backtester?sslmode=disable
+      DATA_SOURCE_USER: ${POSTGRES_USER:-backtester}
+      DATA_SOURCE_PASS: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in ../.env}
+
+  alloy:
+    image: grafana/alloy:v1.5.1
+    restart: unless-stopped
+    mem_limit: 128m
+    volumes:
+      - ./config/alloy/config.alloy:/etc/alloy/config.alloy:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - alloy_data:/var/lib/alloy/data
+    command:
+      - run
+      - /etc/alloy/config.alloy
+      - --storage.path=/var/lib/alloy/data
+      - --server.http.listen-addr=0.0.0.0:12345
+    depends_on:
+      loki:
+        condition: service_healthy
+
+  grafana:
+    image: grafana/grafana:11.6.1
+    restart: unless-stopped
+    mem_limit: 256m
+    ports:
+      - "127.0.0.1:3201:3000"
+    env_file:
+      - ../.env
+    environment:
+      GF_AUTH_ANONYMOUS_ENABLED: "false"
+      GF_SERVER_ROOT_URL: "https://backtester-logs.shanejames.dev"
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: "${GRAFANA_PASSWORD:?set GRAFANA_PASSWORD in ../.env}"
+      GF_USERS_ALLOW_SIGN_UP: "false"
+      GF_LOG_LEVEL: warn
+    volumes:
+      - ./config/grafana/provisioning:/etc/grafana/provisioning:ro
+      - grafana_data:/var/lib/grafana
+    depends_on:
+      - loki
+      - prometheus
+
+volumes:
+  loki_data:
+  prometheus_data:
+  alloy_data:
+  grafana_data:

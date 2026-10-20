@@ -1,0 +1,57 @@
+// Collect Docker logs only from Compose project "backtester"
+// (clickhouse/postgres). This stack runs as project "backtester-obs".
+// Alloy HTTP :12345/metrics is scraped by Prometheus on the compose network.
+
+discovery.docker "containers" {
+	host             = "unix:///var/run/docker.sock"
+	refresh_interval = "10s"
+}
+
+discovery.relabel "backtester" {
+	targets = discovery.docker.containers.targets
+
+	rule {
+		source_labels = ["__meta_docker_container_label_com_docker_compose_project"]
+		regex         = "backtester"
+		action        = "keep"
+	}
+
+	rule {
+		source_labels = ["__meta_docker_container_name"]
+		regex         = "/(.*)"
+		target_label  = "container"
+	}
+
+	rule {
+		source_labels = ["__meta_docker_container_label_com_docker_compose_project"]
+		target_label  = "project"
+	}
+
+	rule {
+		source_labels = ["__meta_docker_container_label_com_docker_compose_service"]
+		target_label  = "service"
+	}
+
+	rule {
+		source_labels = ["__meta_docker_container_image"]
+		target_label  = "image"
+	}
+
+	rule {
+		source_labels = ["project"]
+		target_label  = "job"
+		replacement   = "docker/$1"
+	}
+}
+
+loki.source.docker "backtester" {
+	host       = "unix:///var/run/docker.sock"
+	targets    = discovery.relabel.backtester.output
+	forward_to = [loki.write.local.receiver]
+}
+
+loki.write "local" {
+	endpoint {
+		url = "http://loki:3100/loki/api/v1/push"
+	}
+}

@@ -1,11 +1,11 @@
-"""CLI wiring: --tz fail-fast, ingest/read/coverage against a temp store."""
+"""CLI wiring: --tz fail-fast, ingest/read/coverage against ClickHouse."""
 
 from __future__ import annotations
 
 from pathlib import Path
 
 from backtester.cli import main
-from backtester.store.parquet_duckdb import ParquetDuckDBStore
+from backtester.store.clickhouse import ClickHouseStore
 from tests.conftest import aapl, bars_frame, utc
 
 
@@ -18,15 +18,12 @@ def test_cli_rejects_ist(tmp_path: Path, monkeypatch, capsys) -> None:  # noqa: 
     assert "IANA" in err or "abbreviation" in err.lower() or "IST" in err
 
 
-def test_cli_coverage(tmp_path: Path, monkeypatch, capsys) -> None:  # noqa: ANN001
-    data = tmp_path / "data"
-    monkeypatch.setenv("BACKTESTER_DATA_DIR", str(data))
-    store = ParquetDuckDBStore(data)
+def test_cli_coverage(tmp_store: ClickHouseStore, monkeypatch, capsys) -> None:  # noqa: ANN001
+    monkeypatch.setenv("CLICKHOUSE_DATABASE", tmp_store.database)
     inst = aapl()
-    store.upsert_instrument(inst)
-    store.write_batch(bars_frame(inst, [utc(2024, 1, 16, 14, 30)], source="yahoo", timeframe="1d"))
-    store.update_coverage(inst.instrument_id, "1d", "yahoo", utc(2024, 1, 16, 14, 30), utc(2024, 1, 16, 14, 30))
-    store.close()
+    tmp_store.upsert_instrument(inst)
+    tmp_store.write_batch(bars_frame(inst, [utc(2024, 1, 16, 14, 30)], source="yahoo", timeframe="1d"))
+    tmp_store.update_coverage(inst.instrument_id, "1d", "yahoo", utc(2024, 1, 16, 14, 30), utc(2024, 1, 16, 14, 30))
     code = main(["coverage", "EQ:XNAS:AAPL", "--tf", "1d", "--source", "yahoo"])
     assert code == 0
     out = capsys.readouterr().out
@@ -50,7 +47,8 @@ def test_cli_strat_list(capsys) -> None:  # noqa: ANN001
     assert out == ["buy_hold", "cap_mix", "guard", "periodic", "prism", "sma_cross", "static", "year_winner"]
 
 
-def test_cli_strat_run_missing_coverage(tmp_path: Path, monkeypatch, capsys) -> None:  # noqa: ANN001
+def test_cli_strat_run_missing_coverage(tmp_path: Path, monkeypatch, capsys, tmp_store: ClickHouseStore) -> None:  # noqa: ANN001
+    monkeypatch.setenv("CLICKHOUSE_DATABASE", tmp_store.database)
     monkeypatch.setenv("BACKTESTER_DATA_DIR", str(tmp_path / "data"))
     yaml_path = tmp_path / "gap.yaml"
     yaml_path.write_text(

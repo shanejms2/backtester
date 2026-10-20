@@ -11,6 +11,7 @@ from pydantic import ValidationError
 
 from backtester.cli import main
 from backtester.exceptions import InvalidSpecError, MissingCoverageError, UnknownStrategyError
+from backtester.store.clickhouse import ClickHouseStore
 from backtester.strategy.engine import compute_metrics, format_metrics_table, run_spec, write_equity_chart
 from backtester.strategy.plugins.buy_hold import BuyHold, BuyHoldParams
 from backtester.strategy.plugins.prism import Prism
@@ -281,20 +282,18 @@ def test_two_name_buy_hold_engine(tmp_store, tmp_path: Path) -> None:  # noqa: A
     assert weights == {0.5}
 
 
-def test_cli_compare_chart_no_open(tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys) -> None:  # noqa: ANN001
-    from backtester.store.parquet_duckdb import ParquetDuckDBStore
-
-    data = tmp_path / "data"
-    monkeypatch.setenv("BACKTESTER_DATA_DIR", str(data))
+def test_cli_compare_chart_no_open(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys, tmp_store: ClickHouseStore
+) -> None:  # noqa: ANN001
+    monkeypatch.setenv("CLICKHOUSE_DATABASE", tmp_store.database)
+    monkeypatch.setenv("BACKTESTER_DATA_DIR", str(tmp_path / "data"))
     monkeypatch.setenv("TMPDIR", str(tmp_path / "tmp"))
     (tmp_path / "tmp").mkdir()
-    store = ParquetDuckDBStore(data)
     inst = aapl()
     stamps = _stamps(12)
     closes = [10.0 + i * 0.2 for i in range(12)]
     opens = [10.0, *closes[:-1]]
-    _seed(store, inst, stamps, source="yahoo", opens=opens, closes=closes)
-    store.close()
+    _seed(tmp_store, inst, stamps, source="yahoo", opens=opens, closes=closes)
     yaml_path = _write_spec(
         tmp_path / "cli.yaml",
         names=[(inst.instrument_id, "equity", "nyse", 0.0)],
