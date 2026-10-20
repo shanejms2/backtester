@@ -10,8 +10,7 @@ from zoneinfo import ZoneInfo
 import polars as pl
 
 from backtester.calendar.display import ensure_utc
-from backtester.domain import Instrument, PairSnapshot, Quality, VendorBar
-from backtester.store.parquet_duckdb import empty_bars
+from backtester.domain import Instrument, PairSnapshot, Quality, VendorBar, empty_bars
 from backtester.timeframes import TIMEFRAME_DELTA, Timeframe
 
 NY_TZ = ZoneInfo("America/New_York")
@@ -96,6 +95,9 @@ def normalize_vendor_bars(
             continue
         partial = bar.is_partial if bar.is_partial is not None else is_partial_bar(ts_utc, timeframe, clock)
         quality: str = "ok"
+        adj = bar.adj_close
+        if adj is None or not math.isfinite(adj):
+            adj = float(bar.close)
         row = {
             "instrument_id": instrument.instrument_id,
             "source": bar.source,
@@ -108,6 +110,7 @@ def normalize_vendor_bars(
             "volume": float(bar.volume),
             "is_partial": bool(partial),
             "quality": quality,
+            "adj_close": float(adj),
         }
         if ts_utc in seen:
             rows[seen[ts_utc]] = row
@@ -117,7 +120,67 @@ def normalize_vendor_bars(
     if not rows:
         return empty_bars()
     frame = pl.DataFrame(rows)
-    return frame.with_columns(pl.col("ts_utc").dt.convert_time_zone("UTC")).sort("ts_utc")
+    frame = frame.with_columns(pl.col("ts_utc").dt.convert_time_zone("UTC")).sort("ts_utc")
+    return repair_price_level_glitches(frame)
+
+
+_DECIMAL_LO = 0.07
+_DECIMAL_HI = 0.13
+_NEIGHBOR_BARS = 5
+_SCALE_UP = 10.0
+_SCALE_DOWN = 0.1
+
+
+def _neighbor_median(column: str, *, forward: bool) -> pl.Expr:
+    shifts = [pl.col(column).shift(-offset if forward else offset) for offset in range(1, _NEIGHBOR_BARS + 1)]
+    return pl.concat_list(shifts).list.median()
+
+
+def repair_price_level_glitches(frame: pl.DataFrame) -> pl.DataFrame:
+    """Rescale isolated 10× / 0.1× Yahoo level islands using neighbor medians.
+
+    A real split or crash stays at the new level, so forward and backward
+    medians disagree and the bar is left alone. Two (or a few) prints that
+    sit ~10× away from *both* sides are vendor decimal errors — Nifty BeES
+    2019-12-18/19 closed at ~13 instead of ~130. Volume is inverse-scaled
+    so share counts stay in the same units as neighboring days.
+    """
+    if frame.height < _NEIGHBOR_BARS + 1 or "close" not in frame.columns:
+        return frame
+    close = pl.col("close")
+    back = _neighbor_median("close", forward=False)
+    fwd = _neighbor_median("close", forward=True)
+    ratio_back = close / back
+    ratio_fwd = close / fwd
+    scale_up = (
+        (ratio_back >= _DECIMAL_LO)
+        & (ratio_back <= _DECIMAL_HI)
+        & (ratio_fwd >= _DECIMAL_LO)
+        & (ratio_fwd <= _DECIMAL_HI)
+    )
+    scale_down = (
+        (ratio_back >= 1.0 / _DECIMAL_HI)
+        & (ratio_back <= 1.0 / _DECIMAL_LO)
+        & (ratio_fwd >= 1.0 / _DECIMAL_HI)
+        & (ratio_fwd <= 1.0 / _DECIMAL_LO)
+    )
+    scale = (
+        pl.when(scale_up)
+        .then(pl.lit(_SCALE_UP))
+        .when(scale_down)
+        .then(pl.lit(_SCALE_DOWN))
+        .otherwise(pl.lit(1.0))
+        .fill_null(1.0)
+    )
+    price_cols = [c for c in ("open", "high", "low", "close", "adj_close") if c in frame.columns]
+    return (
+        frame.with_columns(scale.alias("_level_scale"))
+        .with_columns(
+            [(pl.col(c) * pl.col("_level_scale")).alias(c) for c in price_cols]
+            + ([(pl.col("volume") / pl.col("_level_scale")).alias("volume")] if "volume" in frame.columns else []),
+        )
+        .drop("_level_scale")
+    )
 
 
 def snapshot_quality(price_usd: float | None, liquidity_usd: float | None) -> Quality:

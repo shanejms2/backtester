@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from datetime import UTC, datetime, time, timedelta
+from datetime import UTC, date, datetime, time, timedelta
 from functools import lru_cache
 from typing import Any
 from zoneinfo import ZoneInfo
@@ -12,15 +12,27 @@ from backtester.domain import CoverageInterval, Instrument, Interval, SessionTyp
 from backtester.timeframes import TIMEFRAME_DELTA, Timeframe
 
 NY_TZ = ZoneInfo("America/New_York")
+IST = ZoneInfo("Asia/Kolkata")
 ETH_OPEN = time(4, 0)
 ETH_CLOSE = time(20, 0)
+# Default XNYS is ~20y; GLD listed 2004-11-18 and SPY in 1993.
+_XNYS_START = "1990-01-01"
+_XNSE_START = "1997-01-01"
 
 
 @lru_cache(maxsize=4)
 def _xnys() -> Any:
     import exchange_calendars as xcals
 
-    return xcals.get_calendar("XNYS")
+    return xcals.get_calendar("XNYS", start=_XNYS_START)
+
+
+@lru_cache(maxsize=4)
+def _xnse() -> Any:
+    import exchange_calendars as xcals
+
+    # Package ships XBOM, not XNSE. BSE/NSE holidays are nearly the same.
+    return xcals.get_calendar("XBOM", start=_XNSE_START)
 
 
 def _as_utc(ts: Any) -> datetime:
@@ -70,9 +82,51 @@ class SessionCalendar:
         end_utc = ensure_utc(end)
         if end_utc <= start_utc:
             return []
-        if instrument.asset_class in {"crypto", "dex"}:
+        if instrument.asset_class in {"crypto", "dex"} or instrument.venue.upper() == "CCY":
             return [Interval(start=start_utc, end=end_utc)]
-        return self._equity_windows(start_utc, end_utc, timeframe, session)
+        if instrument.venue.upper() == "XNSE":
+            return self._listed_windows(_xnse(), IST, start_utc, end_utc, timeframe, session)
+        return self._listed_windows(_xnys(), NY_TZ, start_utc, end_utc, timeframe, session)
+
+    def session_dates(self, start: datetime, end: datetime) -> list[date]:
+        """NYSE session dates whose RTH overlaps ``[start, end)``.
+
+        Crypto weekend bars are ignored: the spine is XNYS only. Bounds are
+        UTC; the returned dates are America/New_York session dates.
+        """
+        start_utc = ensure_utc(start)
+        end_utc = ensure_utc(end)
+        if end_utc <= start_utc:
+            return []
+        cal = _xnys()
+        start_ny = start_utc.astimezone(NY_TZ).date()
+        end_ny = (end_utc - timedelta(microseconds=1)).astimezone(NY_TZ).date()
+        sessions = cal.sessions_in_range(str(start_ny), str(end_ny))
+        out: list[date] = []
+        for label in sessions:
+            open_ts = _as_utc(cal.session_open(label))
+            close_ts = _as_utc(cal.session_close(label))
+            if open_ts < end_utc and close_ts > start_utc:
+                out.append(open_ts.astimezone(NY_TZ).date())
+        return out
+
+    def xnse_session_dates(self, start: datetime, end: datetime) -> list[date]:
+        """NSE session dates (XBOM calendar) whose session overlaps ``[start, end)``."""
+        start_utc = ensure_utc(start)
+        end_utc = ensure_utc(end)
+        if end_utc <= start_utc:
+            return []
+        cal = _xnse()
+        start_ist = start_utc.astimezone(IST).date()
+        end_ist = (end_utc - timedelta(microseconds=1)).astimezone(IST).date()
+        sessions = cal.sessions_in_range(str(start_ist), str(end_ist))
+        out: list[date] = []
+        for label in sessions:
+            open_ts = _as_utc(cal.session_open(label))
+            close_ts = _as_utc(cal.session_close(label))
+            if open_ts < end_utc and close_ts > start_utc:
+                out.append(open_ts.astimezone(IST).date())
+        return out
 
     def is_holiday(self, day: datetime) -> bool:
         """Return True if ``day`` (any tz) is a full NYSE holiday."""
@@ -110,22 +164,23 @@ class SessionCalendar:
                     needed.append(clipped)
         return merge_intervals(needed)
 
-    def _equity_windows(
+    def _listed_windows(
         self,
+        cal: Any,
+        zone: ZoneInfo,
         start_utc: datetime,
         end_utc: datetime,
         timeframe: Timeframe,
         session: SessionType,
     ) -> list[Interval]:
-        cal = _xnys()
-        start_ny = start_utc.astimezone(NY_TZ).date()
-        end_ny = (end_utc - timedelta(microseconds=1)).astimezone(NY_TZ).date()
-        sessions = cal.sessions_in_range(str(start_ny), str(end_ny))
+        start_local = start_utc.astimezone(zone).date()
+        end_local = (end_utc - timedelta(microseconds=1)).astimezone(zone).date()
+        sessions = cal.sessions_in_range(str(start_local), str(end_local))
         out: list[Interval] = []
         for label in sessions:
             rth_open = _as_utc(cal.session_open(label))
             rth_close = _as_utc(cal.session_close(label))
-            if session == "eth":
+            if session == "eth" and zone is NY_TZ:
                 ny_date = rth_open.astimezone(NY_TZ).date()
                 open_ts = datetime.combine(ny_date, ETH_OPEN, tzinfo=NY_TZ).astimezone(UTC)
                 close_ts = datetime.combine(ny_date, ETH_CLOSE, tzinfo=NY_TZ).astimezone(UTC)

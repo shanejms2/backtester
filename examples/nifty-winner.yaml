@@ -1,0 +1,327 @@
+# Today's Nifty 50. At each year-end or quarter-end, buy the best full
+# prior period. A quarter resets four times a year and scores the trailing
+# year into that quarter-end (150 prints, including the quarter-end a year
+# earlier). A year uses the calendar year and 150 prints.
+# Prices stay in rupees: currency is marked USD only so the engine does not
+# convert NSE quotes. total_return folds splits and dividends into the path.
+# Survivorship: names that left the index, or no longer have a Yahoo series,
+# are absent. A name competes only after it has a full calendar year.
+name: nifty-winner
+timeframe: 1d
+from: 2000-01-01
+source: yahoo
+clock: xnse
+total_return: true
+allow_short: false
+initial_equity: 100
+universe:
+  - id: EQ:XNSE:ADANIENT
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:ADANIPORTS
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:APOLLOHOSP
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:ASIANPAINT
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:AXISBANK
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:BAJAJ-AUTO
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:BAJFINANCE
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:BAJAJFINSV
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:BEL
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:BHARTIARTL
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:BSE
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:CIPLA
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:COALINDIA
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:DRREDDY
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:EICHERMOT
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:ETERNAL
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:GRASIM
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:HCLTECH
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:HDFCBANK
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:HDFCLIFE
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:HINDALCO
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:HINDUNILVR
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:ICICIBANK
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:INDIGO
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:INFY
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:ITC
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:JIOFIN
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:JSWSTEEL
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:KOTAKBANK
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:LT
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:MARUTI
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:MAXHEALTH
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:NESTLEIND
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:NTPC
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:ONGC
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:POWERGRID
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:RELIANCE
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:SBILIFE
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:SHRIRAMFIN
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:SBIN
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:SUNPHARMA
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:TCS
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:TATACONSUM
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:TMPV
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:TATASTEEL
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:TECHM
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:TITAN
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:TRENT
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:ULTRACEMCO
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:M&M
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+runs:
+  - id: nifty-quarter
+    strategy: year_winner
+    drift: true
+    params:
+      history_from: 2000-01-01
+      trade_from: 2001-01-01
+      n: 3
+      every: quarter
+      min_prints: 150

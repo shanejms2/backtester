@@ -1,0 +1,69 @@
+# Same rules as examples/qqq-gld.yaml, from 1997.
+# QQQ listed 1999-03-10 and GLD listed 2004-11-18, so the earlier bars are stand-ins:
+# Nasdaq-100 (^NDX) until QQQ's first open, then the real QQQ bars;
+# the London 10:30 gold fix until GLD's first open, then the real GLD bars.
+# Each stand-in is scaled so its last close equals the ETF's first open.
+name: qqq-gld-1997
+timeframe: 1d
+from: 1997-01-01
+source: yahoo
+clock: nyse_1600
+cash_rate_id: EQ:XNAS:IRX
+drift: true
+allow_short: false
+universe:
+  - id: EQ:XNAS:QQQ1997
+    class: equity
+    calendar: nyse
+    fee_bps: 5
+    role: index_etf
+    source: splice
+  - id: EQ:ARCX:GLD1997
+    class: equity
+    calendar: nyse
+    fee_bps: 5
+    role: commodity_etf
+    source: splice
+runs:
+  - id: qqq-gld-rise
+    strategy: guard
+    drift: false
+    params:
+      guard: EQ:XNAS:QQQ1997
+      exit_bars: 200
+      enter_bars: 50
+      rise_bars: 20          # re-enter only while the 200-session average is rising
+      risk_on:
+        "EQ:XNAS:QQQ1997": 0.70
+        "EQ:ARCX:GLD1997": 0.30
+      risk_off:
+        "EQ:ARCX:GLD1997": 0.50
+  - id: qqq-gld-1997
+    strategy: guard
+    drift: false
+    params:
+      guard: EQ:XNAS:QQQ1997
+      exit_bars: 200
+      enter_bars: 50
+      risk_on:
+        "EQ:XNAS:QQQ1997": 0.70
+        "EQ:ARCX:GLD1997": 0.30
+      risk_off:
+        "EQ:ARCX:GLD1997": 0.50
+  - id: qqq-gld
+    strategy: periodic
+    params:
+      every: quarter
+      weights:
+        "EQ:XNAS:QQQ1997": 0.5
+        "EQ:ARCX:GLD1997": 0.5
+  - id: qqq
+    strategy: static
+    params:
+      weights:
+        "EQ:XNAS:QQQ1997": 1.0
+  - id: gld
+    strategy: static
+    params:
+      weights:
+        "EQ:ARCX:GLD1997": 1.0

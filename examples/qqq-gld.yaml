@@ -1,0 +1,64 @@
+name: qqq-gld
+timeframe: 1d
+from: 2005-01-01
+source: yahoo
+clock: nyse_1600
+cash_rate_id: EQ:XNAS:IRX
+drift: true                 # weights follow price between quarterly resets
+allow_short: false
+universe:
+  - id: EQ:XNAS:QQQ
+    class: equity
+    calendar: nyse
+    fee_bps: 5
+    role: index_etf
+    source: yahoo
+  - id: EQ:ARCX:GLD
+    class: equity
+    calendar: nyse
+    fee_bps: 5
+    role: commodity_etf
+    source: yahoo
+runs:
+  - id: qqq-gld-cash
+    strategy: guard
+    drift: false              # constant mix inside a regime; the quarterly run still drifts
+    params:
+      guard: EQ:XNAS:QQQ
+      exit_bars: 200          # leave QQQ after a close under the 200-session average
+      enter_bars: 50          # come back on a close over the 50-session average
+      risk_on:
+        "EQ:XNAS:QQQ": 0.70
+        "EQ:ARCX:GLD": 0.30
+      risk_off:
+        "EQ:ARCX:GLD": 0.50   # the QQQ sleeve sits in T-bills
+  - id: qqq-gld-rise
+    strategy: guard
+    drift: false
+    params:
+      guard: EQ:XNAS:QQQ
+      exit_bars: 200
+      enter_bars: 50
+      rise_bars: 20
+      risk_on:
+        "EQ:XNAS:QQQ": 0.70
+        "EQ:ARCX:GLD": 0.30
+      risk_off:
+        "EQ:ARCX:GLD": 0.50
+  - id: qqq-gld
+    strategy: periodic
+    params:
+      every: quarter
+      weights:
+        "EQ:XNAS:QQQ": 0.5
+        "EQ:ARCX:GLD": 0.5
+  - id: qqq
+    strategy: static
+    params:
+      weights:
+        "EQ:XNAS:QQQ": 1.0
+  - id: gld
+    strategy: static
+    params:
+      weights:
+        "EQ:ARCX:GLD": 1.0

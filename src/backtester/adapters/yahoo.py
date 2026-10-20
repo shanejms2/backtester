@@ -1,4 +1,4 @@
-"""Yahoo Finance adapter. Raw OHLC (auto_adjust=False). Thin vendor protocol."""
+"""Yahoo Finance adapter. Raw OHLC (auto_adjust=False) plus Adj Close. Thin vendor protocol."""
 
 from __future__ import annotations
 
@@ -8,6 +8,7 @@ from typing import Any
 
 from backtester.adapters.base import SourceAdapter
 from backtester.calendar.display import ensure_utc
+from backtester.catalog.instruments import yahoo_ticker
 from backtester.domain import Instrument, VendorBar
 from backtester.exceptions import NativeTimeframeError, PermanentVendorError, QuotaError
 from backtester.timeframes import Timeframe
@@ -35,7 +36,7 @@ YAHOO_LOOKBACK_DAYS: dict[Timeframe, int] = {
 
 
 class YahooAdapter(SourceAdapter):
-    """Yahoo via yfinance. Source id ``yahoo``. Stores **raw** OHLC, not adjusted."""
+    """Yahoo via yfinance. Source id ``yahoo``. Stores **raw** OHLC plus ``adj_close``."""
 
     source_id = "yahoo"
 
@@ -74,7 +75,7 @@ class YahooAdapter(SourceAdapter):
         if (end_utc - start_utc).days > cap_days:
             self._truncated = True
         interval = YAHOO_INTERVAL[timeframe]
-        symbol = instrument.symbol
+        symbol = yahoo_ticker(instrument)
         try:
             raw = self._download(
                 symbol,
@@ -134,6 +135,9 @@ def _rows_to_vendor(raw: Any, symbol: str, timeframe: Timeframe) -> list[VendorB
                 close=float(row["close"]),
                 volume=float(row.get("volume") or 0.0),
                 ts_kind="utc",
+                adj_close=_optional_float(
+                    row.get("adj_close") if row.get("adj_close") is not None else row.get("adj close")
+                ),
             )
         )
     return out
@@ -161,10 +165,23 @@ def _iter_rows(raw: Any) -> Sequence[Mapping[str, Any]]:
                     "low": lower.get("low"),
                     "close": lower.get("close"),
                     "volume": lower.get("volume") or 0.0,
+                    "adj_close": lower.get("adj close") if "adj close" in lower else lower.get("adj_close"),
                 }
             )
         return records
     return []
+
+
+def _optional_float(value: object) -> float | None:
+    if value is None or isinstance(value, bool):
+        return None
+    try:
+        parsed = float(value)  # type: ignore[arg-type]
+    except (TypeError, ValueError):
+        return None
+    if parsed != parsed:  # NaN
+        return None
+    return parsed
 
 
 def _parse_ts(row: Mapping[str, Any]) -> datetime | None:

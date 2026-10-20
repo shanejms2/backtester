@@ -1,8 +1,10 @@
 # backtester
 
-Coverage-driven market data engine. Collect stock and crypto bars **as needed**, normalize them into one schema, persist at good size, and read them through `BarReader` so a backtest module can plug in later without touching ingest.
+Coverage-driven market data engine and causal strategy runner. Collect stock and crypto bars as needed, normalize them into one schema, persist them as Hive Parquet, and read them through `BarReader`. Strategies run on that stored Panel. They do not fetch.
 
-Storage is **UTC only**. Session clocks belong to the venue (NYSE in `America/New_York`; crypto 24/7 UTC). Display timezone is whatever IANA name you pass at read time.
+Storage is UTC only. Session clocks belong to the venue (NYSE in `America/New_York`, NSE in `Asia/Kolkata`, crypto 24/7 UTC). Display timezone is whatever IANA name you pass at read time.
+
+Names and locked decisions: [CONTEXT.md](CONTEXT.md), [docs/adr/](docs/adr/). Layout and flows: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md), [docs/CODEBASE_MAP.md](docs/CODEBASE_MAP.md).
 
 ## Installation
 
@@ -36,9 +38,41 @@ backtester compact
 # Visual QA (Plotly HTML in the browser; --no-open writes the file only)
 backtester chart CRYPTO:HYPERLIQUID:HYPE/USDC --tf 1d --tz UTC
 backtester chart --inventory
+
+# Strategies on stored bars (ingest first; a hole prints the command to run)
+backtester ta list
+backtester strat list
+backtester strat run examples/qqq-gld.yaml
+backtester strat compare examples/qqq-gld.yaml --chart --no-open
 ```
 
 Same commands work as `python -m backtester ...`.
+
+## Strategies
+
+A Spec is a YAML file: one Universe, one window, several Runs. Every Run shares the Panel. Metrics start at the latest `ready_bars` on the Spec, so a buy-and-hold comparison does not start before the slowest strategy is warm.
+
+`clock` chooses the decision rows:
+
+| Clock | Rows |
+| --- | --- |
+| `native` (default) | Inner join on stored `ts_utc`. Every name uses the Spec timeframe. |
+| `nyse_1600` | NYSE session days. Close is the last price at or before 16:00 ET. Open on that row is 09:30 ET, so the next row's open is the fill. Crypto is read from 1h bars. |
+| `xnse` | NSE session days, stamped 15:30 IST, open 09:15 IST. |
+
+Fills happen at the next bar's raw `open`, and only when the weight change clears the rebalance band. A target of `0` exits. A null target holds. `cash_rate_id` (Yahoo `^IRX`, stored as `EQ:XNAS:IRX`) pays leftover cash `close / 100 / 365`. It is not a universe name.
+
+`drift: true` lets weights follow price between targets. `drift: false` is constant-mix. A Run can override the Spec.
+
+Built-in strategies: `buy_hold`, `cap_mix`, `guard`, `periodic`, `prism`, `sma_cross`, `static`, `year_winner`. Examples live in `examples/`.
+
+## Tests
+
+```bash
+pytest
+```
+
+Tests use JSON fixtures under `tests/fixtures/`. They do not call vendors and they do not read `.env`. Chart and compare tests pass `--no-open`. GitHub Actions runs `ruff`, `mypy`, and `pytest` on Python 3.12 with an empty `ALPHAVANTAGE_API_KEY`.
 
 ## Configuration
 
@@ -59,4 +93,12 @@ mypy
 pytest
 ```
 
-See [CONTEXT.md](CONTEXT.md) for domain names and [docs/adr/](docs/adr/) for locked decisions.
+## More documentation
+
+| Doc | What it answers |
+| --- | --- |
+| [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | Pipelines, seams, clocks, what not to split |
+| [docs/CODEBASE_MAP.md](docs/CODEBASE_MAP.md) | Where each module lives and where to edit |
+| [docs/CLI_FLOWS.md](docs/CLI_FLOWS.md) | What each command does, including errors |
+| [docs/STORE.md](docs/STORE.md) | Parquet layout and DuckDB catalog tables |
+| [docs/DEVELOPER_GUIDE.md](docs/DEVELOPER_GUIDE.md) | Add a strategy, indicator, adapter, or test |

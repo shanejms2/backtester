@@ -19,23 +19,13 @@ from backtester.catalog.instruments import (
     instruments_from_row,
     parse_instrument_id,
 )
-from backtester.domain import CoverageInterval, Instrument, WriteResult
+from backtester.domain import CoverageInterval, Instrument, WriteResult, empty_bars
 from backtester.store.interface import BarStore
 from backtester.timeframes import Timeframe
 
-BAR_COLUMNS = [
-    "instrument_id",
-    "source",
-    "timeframe",
-    "ts_utc",
-    "open",
-    "high",
-    "low",
-    "close",
-    "volume",
-    "is_partial",
-    "quality",
-]
+BAR_COLUMNS: list[str] = empty_bars().columns
+
+_REQUIRED_BAR_COLUMNS = [c for c in BAR_COLUMNS if c != "adj_close"]
 
 SNAPSHOT_COLUMNS = [
     "source",
@@ -65,25 +55,6 @@ SNAPSHOT_COLUMNS = [
 _WRITE_ROWS = 250_000
 _COMPACT_MIN_FILES = 8
 _COMPACT_AVG_BYTES = 1_000_000
-
-
-def empty_bars() -> pl.DataFrame:
-    """Empty Bars frame with the canonical schema."""
-    return pl.DataFrame(
-        schema={
-            "instrument_id": pl.Utf8,
-            "source": pl.Utf8,
-            "timeframe": pl.Utf8,
-            "ts_utc": pl.Datetime("us", "UTC"),
-            "open": pl.Float64,
-            "high": pl.Float64,
-            "low": pl.Float64,
-            "close": pl.Float64,
-            "volume": pl.Float64,
-            "is_partial": pl.Boolean,
-            "quality": pl.Utf8,
-        }
-    )
 
 
 def _utc_series(frame: pl.DataFrame, column: str) -> pl.DataFrame:
@@ -216,8 +187,9 @@ class ParquetDuckDBStore(BarStore):
             lf = empty_bars().lazy()
         else:
             lf = pl.scan_parquet(paths, hive_partitioning=True)
-            available = set(BAR_COLUMNS)
-            lf = lf.select([c for c in BAR_COLUMNS if c in available])
+            names = set(lf.collect_schema().names())
+            lf = lf.select([c for c in BAR_COLUMNS if c in names])
+            lf = _ensure_adj_close_lazy(lf)
         lf = lf.filter(
             (pl.col("instrument_id") == instrument_id)
             & (pl.col("timeframe") == timeframe)
@@ -368,7 +340,7 @@ class ParquetDuckDBStore(BarStore):
             if len(parts) < _COMPACT_MIN_FILES and avg >= _COMPACT_AVG_BYTES:
                 continue
             combined = pl.concat([pl.read_parquet(p) for p in parts], how="diagonal_relaxed")
-            combined = _dedup_bars(combined)
+            combined = _dedup_bars(_ensure_adj_close(combined))
             with _PartitionLock(folder / ".lock"):
                 new_path = self._atomic_write(folder, combined.select(BAR_COLUMNS), replace_parts=parts)
             for old in parts:
@@ -588,7 +560,7 @@ class ParquetDuckDBStore(BarStore):
                     [pl.read_parquet(p) for p in existing_files],
                     how="diagonal_relaxed",
                 )
-                combined = _dedup_bars(pl.concat([existing, payload], how="diagonal_relaxed"))
+                combined = _dedup_bars(_ensure_adj_close(pl.concat([existing, payload], how="diagonal_relaxed")))
                 path = self._atomic_write(folder, combined.select(BAR_COLUMNS), replace_parts=existing_files)
                 for old in existing_files:
                     self._delete_file_row(str(old))
@@ -702,15 +674,30 @@ class ParquetDuckDBStore(BarStore):
 
 def _prepare_bars(bars: pl.DataFrame) -> pl.DataFrame:
     frame = bars
-    missing = [c for c in BAR_COLUMNS if c not in frame.columns]
+    missing = [c for c in _REQUIRED_BAR_COLUMNS if c not in frame.columns]
     if missing:
         raise ValueError(f"write_batch missing columns: {missing}")
+    frame = _ensure_adj_close(frame)
     frame = frame.with_columns(pl.col("ts_utc").dt.convert_time_zone("UTC"))
     frame = frame.with_columns(
         pl.col("ts_utc").dt.year().alias("year"),
         pl.col("ts_utc").dt.month().alias("month"),
     )
     return _dedup_bars(frame)
+
+
+def _ensure_adj_close(frame: pl.DataFrame) -> pl.DataFrame:
+    """Null or missing ``adj_close`` falls back to ``close``."""
+    if "adj_close" not in frame.columns:
+        return frame.with_columns(pl.col("close").alias("adj_close"))
+    return frame.with_columns(pl.col("adj_close").fill_null(pl.col("close")))
+
+
+def _ensure_adj_close_lazy(frame: pl.LazyFrame) -> pl.LazyFrame:
+    names = set(frame.collect_schema().names())
+    if "adj_close" not in names:
+        return frame.with_columns(pl.col("close").alias("adj_close"))
+    return frame.with_columns(pl.col("adj_close").fill_null(pl.col("close")))
 
 
 def _dedup_bars(frame: pl.DataFrame) -> pl.DataFrame:

@@ -13,6 +13,7 @@ from backtester.adapters.ccxt_venue import CCXTVenueAdapter
 from backtester.adapters.dexscreener import DexScreenerAdapter
 from backtester.adapters.geckoterminal import GeckoTerminalAdapter
 from backtester.adapters.yahoo import YahooAdapter
+from backtester.domain import Instrument
 from backtester.exceptions import IncompleteHistoryError, NativeTimeframeError, PermanentVendorError, QuotaError
 from backtester.normalize.bars import snapshots_to_frame
 from tests.conftest import FIXTURES, aapl, btc, load_json, pepe_pool, utc
@@ -31,6 +32,61 @@ def test_yahoo_fixture_pages() -> None:
     assert len(pages) == 1
     assert pages[0][0].source == "yahoo"
     assert pages[0][0].ts.tzinfo is not None
+
+
+def test_yahoo_fills_adj_close() -> None:
+    rows = [
+        {
+            "ts": "2025-03-07T14:30:00+00:00",
+            "open": 100,
+            "high": 102,
+            "low": 99,
+            "close": 101,
+            "volume": 1000,
+            "adj close": 90,
+        }
+    ]
+
+    def download(symbol, **kwargs):  # noqa: ANN001
+        del symbol, kwargs
+        return rows
+
+    adapter = YahooAdapter(download=download)
+    pages = list(adapter.fetch_pages(aapl(), "1d", utc(2025, 3, 1), utc(2025, 3, 15)))
+    assert pages[0][0].adj_close == pytest.approx(90.0)
+
+
+def test_yahoo_fetches_irx_as_caret_ticker() -> None:
+    seen: dict[str, str] = {}
+
+    def download(symbol, **kwargs):  # noqa: ANN001
+        del kwargs
+        seen["symbol"] = symbol
+        return [
+            {
+                "ts": "2024-01-02T14:30:00+00:00",
+                "open": 5.15,
+                "high": 5.16,
+                "low": 5.14,
+                "close": 5.15,
+                "volume": 0,
+                "adj close": 5.15,
+            }
+        ]
+
+    irx = Instrument(
+        instrument_id="EQ:XNAS:IRX",
+        asset_class="equity",
+        venue="XNAS",
+        symbol="IRX",
+        session_tz="America/New_York",
+        aliases=("EQ:XNAS:IRX", "IRX", "^IRX"),
+    )
+    adapter = YahooAdapter(download=download)
+    pages = list(adapter.fetch_pages(irx, "1d", utc(2024, 1, 1), utc(2024, 1, 5)))
+    assert seen["symbol"] == "^IRX"
+    assert pages[0][0].vendor_symbol == "^IRX"
+    assert pages[0][0].close == pytest.approx(5.15)
 
 
 def test_yahoo_rejects_4h() -> None:
@@ -214,3 +270,101 @@ def test_geckoterminal_401_truncates() -> None:
     pages = list(adapter.fetch_pages(pepe_pool(), "1h", utc(2024, 1, 1), utc(2024, 6, 1)))
     assert pages == []
     assert adapter.truncated()
+
+
+_LEGACY_BHAV = """SYMBOL,SERIES,OPEN,HIGH,LOW,CLOSE,LAST,PREVCLOSE,TOTTRDQTY,TOTTRDVAL,TIMESTAMP,TOTALTRADES,ISIN
+RELIANCE,EQ,100.5,110,99,105.25,105,98,1000,50000,02-JAN-2024,10,INE002A01018
+RELIANCE,BE,1,1,1,1,1,1,1,1,02-JAN-2024,1,INE002A01018
+TCS,EQ,200,210,190,205,205,198,500,10000,02-JAN-2024,5,INE467B01029
+"""
+
+_UDIFF_BHAV = """TradDt,BizDt,Sgmt,TckrSymb,SctySrs,OpnPric,HghPric,LwPric,ClsPric,TtlTradgVol
+2024-10-01,2024-10-01,CM,NIFTYBEES,EQ,288.78,290,287,288.27,5076492
+2024-10-01,2024-10-01,CM,NIFTYBEES,BE,1,1,1,1,10
+"""
+
+_BROKEN_BHAV = """FOO,BAR
+1,2
+"""
+
+
+def _nse(symbol: str) -> Instrument:
+    return Instrument(
+        instrument_id=f"EQ:XNSE:{symbol}",
+        asset_class="equity",
+        venue="XNSE",
+        symbol=symbol,
+        session_tz="Asia/Kolkata",
+    )
+
+
+def _zip_csv(name: str, text: str) -> bytes:
+    import io
+    import zipfile
+
+    buffer = io.BytesIO()
+    with zipfile.ZipFile(buffer, "w") as archive:
+        archive.writestr(name, text)
+    return buffer.getvalue()
+
+
+def test_bhavcopy_legacy_eq_row_ignores_other_series() -> None:
+    from datetime import date
+    from zoneinfo import ZoneInfo
+
+    from backtester.adapters.bhavcopy import bar_from_bhavcopy
+
+    bar = bar_from_bhavcopy(_zip_csv("cm02JAN2024bhav.csv", _LEGACY_BHAV), "reliance", date(2024, 1, 2))
+    assert bar is not None
+    assert bar.source == "bhavcopy"
+    assert bar.close == pytest.approx(105.25)
+    assert bar.volume == pytest.approx(1000)
+    assert bar.adj_close == pytest.approx(105.25)
+    local = bar.ts.astimezone(ZoneInfo("Asia/Kolkata"))
+    assert (local.hour, local.minute) == (9, 15)
+
+
+def test_bhavcopy_udiff_columns() -> None:
+    from datetime import date
+
+    from backtester.adapters.bhavcopy import bar_from_bhavcopy
+
+    bar = bar_from_bhavcopy(_zip_csv("BhavCopy.csv", _UDIFF_BHAV), "NIFTYBEES", date(2024, 10, 1))
+    assert bar is not None
+    assert bar.open == pytest.approx(288.78)
+    assert bar.close == pytest.approx(288.27)
+
+
+def test_bhavcopy_unknown_columns_fail_loudly() -> None:
+    from datetime import date
+
+    from backtester.adapters.bhavcopy import bar_from_bhavcopy
+
+    with pytest.raises(PermanentVendorError, match="columns changed"):
+        bar_from_bhavcopy(_BROKEN_BHAV.encode(), "RELIANCE", date(2024, 1, 2))
+
+
+def test_bhavcopy_reads_saved_zip_without_http(tmp_path: Path) -> None:
+    from datetime import date
+    from unittest.mock import Mock
+
+    from backtester.adapters.bhavcopy import BhavcopyAdapter, official_name
+
+    day_dir = tmp_path / "2024" / "01"
+    day_dir.mkdir(parents=True)
+    name = official_name(date(2024, 1, 2))
+    (day_dir / name).write_bytes(_zip_csv("cm02JAN2024bhav.csv", _LEGACY_BHAV))
+    client = Mock()
+    adapter = BhavcopyAdapter(tmp_path, client=client)
+    pages = list(adapter.fetch_pages(_nse("RELIANCE"), "1d", utc(2024, 1, 2), utc(2024, 1, 3)))
+    assert pages[0][0].close == pytest.approx(105.25)
+    client.get.assert_not_called()
+
+
+def test_bhavcopy_rejects_intraday(tmp_path: Path) -> None:
+    from backtester.adapters.bhavcopy import BhavcopyAdapter
+
+    adapter = BhavcopyAdapter(tmp_path)
+    with pytest.raises(NativeTimeframeError):
+        list(adapter.fetch_pages(_nse("RELIANCE"), "1h", utc(2024, 1, 2), utc(2024, 1, 3)))
+    adapter.close()

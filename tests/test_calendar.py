@@ -6,8 +6,38 @@ from datetime import UTC, datetime, timedelta
 from zoneinfo import ZoneInfo
 
 from backtester.calendar.session import SessionCalendar, subtract_coverage
-from backtester.domain import CoverageInterval, Interval
+from backtester.domain import CoverageInterval, Instrument, Interval
 from tests.conftest import aapl, btc, utc
+
+
+def test_xnys_covers_gld_listing() -> None:
+    cal = SessionCalendar()
+    inst = aapl()
+    start = utc(2004, 11, 18)
+    end = utc(2004, 11, 20)
+    windows = cal.session_windows(inst, start, end, "1d")
+    assert windows
+    dates = {w.start.astimezone(ZoneInfo("America/New_York")).date() for w in windows}
+    assert datetime(2004, 11, 18).date() in dates
+
+
+def test_xnse_session_windows_use_india_calendar() -> None:
+    cal = SessionCalendar()
+    bees = Instrument(
+        instrument_id="EQ:XNSE:NIFTYBEES",
+        asset_class="equity",
+        venue="XNSE",
+        symbol="NIFTYBEES",
+        session_tz="Asia/Kolkata",
+    )
+    start = utc(2024, 1, 25)
+    end = utc(2024, 1, 27)
+    windows = cal.session_windows(bees, start, end, "1d")
+    assert windows
+    ist = ZoneInfo("Asia/Kolkata")
+    dates = {w.start.astimezone(ist).date() for w in windows}
+    assert datetime(2024, 1, 25).date() in dates
+    assert datetime(2024, 1, 26).date() not in dates  # Republic Day
 
 
 def test_nyse_holiday_2025_new_year_not_expected() -> None:
@@ -21,6 +51,17 @@ def test_nyse_holiday_2025_new_year_not_expected() -> None:
     assert datetime(2025, 1, 1).date() not in set(opens_ny)
     assert datetime(2025, 1, 2).date() in set(opens_ny)
     assert cal.is_holiday(datetime(2025, 1, 1, 12, tzinfo=ny))
+
+
+def test_session_dates_skip_weekend_and_holiday() -> None:
+    cal = SessionCalendar()
+    ny = ZoneInfo("America/New_York")
+    start = datetime(2024, 1, 1, tzinfo=ny)
+    end = datetime(2024, 1, 8, tzinfo=ny)
+    dates = cal.session_dates(start, end)
+    assert datetime(2024, 1, 1).date() not in dates  # New Year holiday
+    assert datetime(2024, 1, 6).date() not in dates  # Saturday
+    assert datetime(2024, 1, 3).date() in dates
 
 
 def test_equity_weekend_is_expected_gap() -> None:

@@ -1,0 +1,47 @@
+# Quarterly reset: 30% liquid, 20% gold, 25% Nifty 50, 25% Nifty Next 50.
+# Prices stay in rupees: currency is marked USD only so the engine does not
+# convert NSE quotes. total_return folds splits and dividends into the path.
+name: all-weather
+timeframe: 1d
+from: 2010-01-01
+source: yahoo
+clock: xnse
+total_return: true
+allow_short: false
+drift: true
+initial_equity: 100
+universe:
+  - id: EQ:XNSE:LIQUIDBEES
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: index_etf
+    currency: USD
+  - id: EQ:XNSE:GOLDBEES
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: commodity_etf
+    currency: USD
+  - id: EQ:XNSE:NIFTYBEES
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: index_etf
+    currency: USD
+  - id: EQ:XNSE:JUNIORBEES
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: index_etf
+    currency: USD
+runs:
+  - id: all-weather
+    strategy: periodic
+    params:
+      every: quarter
+      weights:
+        "EQ:XNSE:LIQUIDBEES": 0.30
+        "EQ:XNSE:GOLDBEES": 0.20
+        "EQ:XNSE:NIFTYBEES": 0.25
+        "EQ:XNSE:JUNIORBEES": 0.25

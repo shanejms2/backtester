@@ -43,5 +43,6 @@ class Strategy(ABC):
 
         Returns:
             Frame with ``ts_utc``, ``instrument_id``, ``weight``. Null weight
-            means ineligible (Broker treats as flat).
+            means ineligible: the Broker holds the last weight. Weight ``0``
+            is a full exit.
         """

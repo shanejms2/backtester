@@ -120,6 +120,24 @@ def test_idempotent_second_request_is_noop(tmp_store: ParquetDuckDBStore) -> Non
     assert fake.calls == 1
 
 
+def test_yahoo_1d_coalesces_session_holes(tmp_store: ParquetDuckDBStore) -> None:
+    inst = aapl()
+    tmp_store.upsert_instrument(inst)
+    fake = FakeAdapter("yahoo", [])
+    engine = _engine(tmp_store, {"yahoo": fake})
+    engine.ingest(
+        IngestRequest(
+            query="AAPL",
+            timeframe="1d",
+            start=utc(2025, 1, 2),
+            end=utc(2025, 1, 20),
+            source="yahoo",
+            tz="UTC",
+        )
+    )
+    assert fake.calls == 1
+
+
 def test_equity_weekend_not_fetched(tmp_store: ParquetDuckDBStore) -> None:
     inst = aapl()
     tmp_store.upsert_instrument(inst)

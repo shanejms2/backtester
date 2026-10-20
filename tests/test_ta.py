@@ -126,6 +126,7 @@ def test_truncating_last_bar_does_not_change_previous_values() -> None:
     _check(ta.rsi(panel, length=3), ta.rsi(truncated, length=3))
     _check(ta.atr(panel, length=3), ta.atr(truncated, length=3))
     _check(ta.ema(panel, length=3), ta.ema(truncated, length=3))
+    _check(ta.ewm_std(panel, half_life=3), ta.ewm_std(truncated, half_life=3))
     _check(ta.swing_high(panel, left=1, right=1), ta.swing_high(truncated, left=1, right=1))
 
 
@@ -212,3 +213,26 @@ def test_missing_column_raises() -> None:
     panel = pl.DataFrame({"instrument_id": ["A"], "ts_utc": [datetime(2024, 1, 1, tzinfo=UTC)]})
     with pytest.raises(ValueError, match="missing required columns"):
         ta.sma(panel, length=2)
+
+
+def test_ewm_std_causal_grouped_and_warmup() -> None:
+    a = _panel([1.0, 2.0, 4.0, 8.0], instrument_id="A")
+    b = _panel([10.0, 10.0, 10.0, 10.0], instrument_id="B")
+    panel = pl.concat([a, b])
+    got = ta.ewm_std(panel, half_life=2, col="close")
+    aligned = got.to_frame("ewm_std").hstack(panel.select("instrument_id", "close"))
+    a_vals = aligned.filter(pl.col("instrument_id") == "A")["ewm_std"].to_list()
+    b_vals = aligned.filter(pl.col("instrument_id") == "B")["ewm_std"].to_list()
+    assert a_vals[0] is None
+    assert a_vals[-1] is not None and a_vals[-1] > 0
+    assert b_vals[0] is None
+    assert b_vals[-1] == pytest.approx(0.0)
+    scrambled = pl.concat([a, b.with_columns(pl.col("close") + 99.0)])
+    a_scrambled = (
+        ta.ewm_std(scrambled, half_life=2)
+        .to_frame("ewm_std")
+        .hstack(scrambled.select("instrument_id"))
+        .filter(pl.col("instrument_id") == "A")["ewm_std"]
+        .to_list()
+    )
+    _approx_list(a_vals, a_scrambled)

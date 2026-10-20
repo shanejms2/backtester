@@ -5,6 +5,7 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Literal
 
+import polars as pl
 from pydantic import BaseModel, ConfigDict, Field
 
 from backtester.timeframes import Timeframe
@@ -60,6 +61,7 @@ class VendorBar(BaseModel):
     volume: float
     is_partial: bool | None = None
     ts_kind: Literal["utc", "naive_session", "session_date"] = "utc"
+    adj_close: float | None = None
 
 
 class Bar(BaseModel):
@@ -78,6 +80,32 @@ class Bar(BaseModel):
     volume: float
     is_partial: bool = False
     quality: Quality = "ok"
+    adj_close: float | None = None
+
+
+def empty_bars() -> pl.DataFrame:
+    """Empty stored-Bar frame in Parquet column order.
+
+    Normalize returns this when every vendor row is dropped, and the store
+    scans and writes the same columns. Living next to ``Bar`` keeps that
+    schema in one place so Normalize does not import the Parquet adapter.
+    """
+    return pl.DataFrame(
+        schema={
+            "instrument_id": pl.Utf8,
+            "source": pl.Utf8,
+            "timeframe": pl.Utf8,
+            "ts_utc": pl.Datetime("us", "UTC"),
+            "open": pl.Float64,
+            "high": pl.Float64,
+            "low": pl.Float64,
+            "close": pl.Float64,
+            "volume": pl.Float64,
+            "is_partial": pl.Boolean,
+            "quality": pl.Utf8,
+            "adj_close": pl.Float64,
+        }
+    )
 
 
 class PairSnapshot(BaseModel):

@@ -4,6 +4,8 @@ from __future__ import annotations
 
 from datetime import UTC, datetime
 
+import pytest
+
 from backtester.store.parquet_duckdb import ParquetDuckDBStore
 from tests.conftest import aapl, bars_frame, utc
 
@@ -17,6 +19,16 @@ def test_write_and_scan_roundtrip(tmp_store: ParquetDuckDBStore) -> None:
     out = tmp_store.scan(inst.instrument_id, "1d", utc(2024, 1, 1), utc(2024, 2, 1)).collect()
     assert out.height == 1
     assert str(out["instrument_id"][0]) == inst.instrument_id
+
+
+def test_adj_close_roundtrip_and_null_defaults_to_close(tmp_store: ParquetDuckDBStore) -> None:
+    inst = aapl()
+    tmp_store.upsert_instrument(inst)
+    frame = bars_frame(inst, [utc(2024, 1, 16, 14, 30)], source="yahoo", timeframe="1d")
+    tmp_store.write_batch(frame)
+    out = tmp_store.scan(inst.instrument_id, "1d", utc(2024, 1, 1), utc(2024, 2, 1)).collect()
+    assert "adj_close" in out.columns
+    assert float(out["adj_close"][0]) == pytest.approx(float(out["close"][0]))
 
 
 def test_partition_prune_skips_other_months(tmp_store: ParquetDuckDBStore) -> None:

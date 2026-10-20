@@ -39,6 +39,7 @@ def test_cli_ta_list(capsys) -> None:  # noqa: ANN001
     out = capsys.readouterr().out.splitlines()
     assert "sma" in out
     assert "rsi" in out
+    assert "ewm_std" in out
     assert "swing_high" in out
 
 
@@ -46,7 +47,7 @@ def test_cli_strat_list(capsys) -> None:  # noqa: ANN001
     code = main(["strat", "list"])
     assert code == 0
     out = capsys.readouterr().out.splitlines()
-    assert out == ["buy_hold", "sma_cross"]
+    assert out == ["buy_hold", "cap_mix", "guard", "periodic", "prism", "sma_cross", "static", "year_winner"]
 
 
 def test_cli_strat_run_missing_coverage(tmp_path: Path, monkeypatch, capsys) -> None:  # noqa: ANN001

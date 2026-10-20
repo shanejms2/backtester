@@ -1,0 +1,3634 @@
+# Three Nifty 50 names, one current mid-cap, and one current small-cap.
+# Each quarter-end, rank the trailing year inside that sleeve only.
+# Today's index members. Names that left, or never listed, are absent.
+name: cap-mix
+timeframe: 1d
+from: 2000-01-01
+source: yahoo
+clock: xnse
+total_return: true
+allow_short: false
+initial_equity: 100
+drift: true
+universe:
+  - id: EQ:XNSE:ADANIENT
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:ADANIPORTS
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:APOLLOHOSP
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:ASIANPAINT
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:AXISBANK
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:BAJAJ-AUTO
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:BAJFINANCE
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:BAJAJFINSV
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:BEL
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:BHARTIARTL
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:BSE
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:CIPLA
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:COALINDIA
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:DRREDDY
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:EICHERMOT
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:ETERNAL
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:GRASIM
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:HCLTECH
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:HDFCBANK
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:HDFCLIFE
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:HINDALCO
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:HINDUNILVR
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:ICICIBANK
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:INDIGO
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:INFY
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:ITC
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:JIOFIN
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:JSWSTEEL
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:KOTAKBANK
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:LT
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:MARUTI
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:MAXHEALTH
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:NESTLEIND
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:NTPC
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:ONGC
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:POWERGRID
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:RELIANCE
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:SBILIFE
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:SHRIRAMFIN
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:SBIN
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:SUNPHARMA
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:TCS
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:TATACONSUM
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:TMPV
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:TATASTEEL
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:TECHM
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:TITAN
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:TRENT
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:ULTRACEMCO
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:M&M
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:360ONE
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:AIAENG
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:APLAPOLLO
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:AUBANK
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:ABBOTINDIA
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:ATGL
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:ABCAPITAL
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:AJANTPHARM
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:ALKEM
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:ANTHEM
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:APARINDS
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:ASHOKLEY
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:ASTERDM
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:ASTRAL
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:AUROPHARMA
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:AIIL
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:BAJAJHFL
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:BALKRISIND
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:BANKINDIA
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:MAHABANK
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:BERGEPAINT
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:BDL
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:BHARATFORG
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:BHEL
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:BHARTIHEXA
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:GROWW
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:BIOCON
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:BLUESTARCO
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:CRISIL
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:COCHINSHIP
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:COFORGE
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:COLPAL
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:CONCOR
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:COROMANDEL
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:DABUR
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:DALBHARAT
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:DIXON
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:EMBASSY
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:ENDURANCE
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:ESCORTS
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:EXIDEIND
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:NYKAA
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:FEDERALBNK
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:FACT
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:FORTIS
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:GVT&D
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:GMRAIRPORT
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:GICRE
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:GLAXO
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:GLENMARK
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:MEDANTA
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:GODFRYPHLP
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:GODREJIND
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:GODREJPROP
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:FLUOROCHEM
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:HDBFS
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:HAVELLS
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:HEROMOTOCO
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:HEXT
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:HINDCOPPER
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:HINDPETRO
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:HUDCO
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:ICICIGI
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:ICICIAMC
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:ICICIPRULI
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:IDFCFIRSTB
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:ITCHOTELS
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:INDIANB
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:INDHOTEL
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:IOB
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:IRCTC
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:IREDA
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:INDUSTOWER
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:INDUSINDBK
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:NAUKRI
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:IPCALAB
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:JKCEMENT
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:JSWENERGY
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:JSWINFRA
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:JSL
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:JUBLFOOD
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:KPRMILL
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:KEI
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:KALYANKJIL
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:LTF
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:LTTS
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:LGEINDIA
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:LICHSGFIN
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:LAURUSLABS
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:LENSKART
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:LICI
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:LINDEINDIA
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:LLOYDSME
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:LODHA
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:LUPIN
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:MRF
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:M&MFIN
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:MANKIND
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:MARICO
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:MFSL
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:MEESHO
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:MOTILALOFS
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:MPHASIS
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:MCX
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:NHPC
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:NLCINDIA
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:NMDC
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:NTPCGREEN
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:NH
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:NATIONALUM
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:NAM-INDIA
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:OBEROIRLTY
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:OIL
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:PAYTM
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:OFSS
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:POLICYBZR
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:PIIND
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:PAGEIND
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:PATANJALI
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:PERSISTENT
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:PETRONET
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:PHOENIXLTD
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:PIRAMALFIN
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:PREMIERENE
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:PRESTIGE
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:RECLTD
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:RADICO
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:RVNL
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:SBICARD
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:SRF
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:SCHAEFFLER
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:SHREECEM
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:SAIL
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:SUNDARMFIN
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:SUPREMEIND
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:SUZLON
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:SWIGGY
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:TATACOMM
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:TATAINVEST
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:THERMAX
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:TORNTPOWER
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:TIINDIA
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:UNOMINDA
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:UPL
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:UBL
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:UNITDSPR
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:VMM
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:VOLTAS
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:WAAREEENER
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:YESBANK
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:ACC
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:ACMESOLAR
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:AWL
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:AADHARHFC
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:AARTIIND
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:AAVAS
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:ACE
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:ACUTAAS
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:ABREL
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:ABSLAMC
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:CPPLUS
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:AEGISLOG
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:AEGISVOPAK
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:AETHER
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:AFCONS
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:AFFLE
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:ABDL
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:ARE&M
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:AMBER
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:ANANDRATHI
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:ANANTRAJ
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:ANGELONE
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:ANURAS
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:APOLLOTYRE
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:APTUS
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:ASAHIINDIA
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:ATHERENERG
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:ATUL
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:AVANTIFEED
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:AZAD
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:BEML
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:BLS
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:BALRAMCHIN
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:BANDHANBNK
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:BATAINDIA
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:BELRISE
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:BHARATCOAL
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:BSOFT
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:BBOX
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:FIRSTCRY
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:BRIGADE
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:BIRET
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:CCL
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:CESC
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:CIEINDIA
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:CANFINHOME
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:CANHLIFE
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:CAPLIPOINT
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:CGCL
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:CARBORUNIV
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:CARTRADE
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:CASTROLIND
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:CEATLTD
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:CEMPRO
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:CENTRALBK
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:CDSL
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:CMPDI
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:CHAMBLFERT
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:CHENNPETRO
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:CHOICEIN
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:CHOLAHLDNG
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:CUB
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:CLEANMAX
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:CLEAN
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:COHANCE
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:CAMS
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:CONCORDBIO
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:CRAFTSMAN
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:CREDITACC
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:CROMPTON
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:CUPID
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:CYIENT
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:DOMS
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:DATAPATTNS
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:DEEPAKFERT
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:DEEPAKNTR
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:DELHIVERY
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:DEVYANI
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:LALPATHLAB
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:EIDPARRY
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:EIHOTEL
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:ELECON
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:ELGIEQUIP
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:EMAMILTD
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:EMCURE
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:EMMVEE
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:ENGINERSIN
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:FINCABLES
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:FSL
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:FIVESTAR
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:FORCEMOT
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:FRACTAL
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:GABRIEL
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:GALLANTT
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:GRSE
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:GILLETTE
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:GLAND
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:GPIL
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:GRANULES
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:GRAPHITE
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:GRAVITA
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:GESHIP
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:GMDCLTD
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:HBLENGINE
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:HEGAM
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:HFCL
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:HSCL
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:HOMEFIRST
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:HONASA
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:HONAUT
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:IDBI
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:IFCI
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:IIFL
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:INOXINDIA
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:IRB
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:IRCON
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:ITI
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:INDIACEM
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:INDIAMART
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:IEX
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:IGL
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:INOXWIND
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:INTELLECT
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:IGIL
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:IKS
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:JBMA
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:JKTYRE
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:JMFINANCIL
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:JSWCEMENT
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:JAINREC
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:JPPOWER
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:J&KBANK
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:JINDALSAW
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:JUBLINGREA
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:JWL
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:JYOTICNC
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:KPITTECH
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:KSB
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:KAJARIACER
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:KPIL
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:KARURVYSYA
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:KAYNES
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:KEC
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:KFINTECH
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:KIRLOSBROS
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:KIRLOSENG
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:KIMS
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:LTFOODS
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:LEMONTREE
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:MMTC
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:MTARTECH
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:MGL
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:MANAPPURAM
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:MRPL
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:MINDACORP
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:MSUMI
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:NATCOPHARM
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:NBCC
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:NCC
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:NSLNISP
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:NAVA
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:NAVINFLUOR
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:NETWEB
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:NEULANDLAB
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:NUVAMA
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:NUVOCO
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:OLAELEC
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:OLECTRA
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:ONESOURCE
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:PCBL
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:PGEL
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:PNBHOUSING
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:PTCIL
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:PVRINOX
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:PARADEEP
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:PWL
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:PINELABS
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:PPLPHARMA
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:POLYMED
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:POONAWALLA
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:PFOCUS
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:PRIVISCL
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:RRKABEL
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:RBLBANK
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:RHIM
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:RITES
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:RAILTEL
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:RAINBOW
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:RKFORGE
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:REDINGTON
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:RPOWER
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:RUBICON
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:SJVN
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:SHRIPISTON
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:SAGILITY
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:SAILIFE
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:SAMMAANCAP
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:SANSERA
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:SARDAEN
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:SCHNEIDER
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:SCI
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:SHYAMMETL
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:SIGNATURE
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:SOBHA
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:SONACOMS
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:STARHEALTH
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:STLTECH
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:SUMICHEM
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:SUNTV
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:SWANCORP
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:SYNGENE
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:SYRMA
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:TBOTEK
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:TDPOWERSYS
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:TATACHEM
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:TATAELXSI
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:TATATECH
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:TTML
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:TECHNOE
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:TEGA
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:TEJASNET
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:TENNIND
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:THANGAMAYL
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:NIACL
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:RAMCOCEM
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:TIMKEN
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:TITAGARH
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:TARIL
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:TRIDENT
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:TRITURBINE
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:UCOBANK
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:UTIAMC
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:URBANCO
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:USHAMART
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:VTL
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:VISL
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:VOGL
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:VEDPOWER
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:VIJAYA
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:WELCORP
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:WELSPUNLIV
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:WHIRLPOOL
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:WOCKPHARMA
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:ZFCVINDIA
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:ZEEL
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:ZENTEC
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:ZENSARTECH
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:ZYDUSWELL
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+  - id: EQ:XNSE:ECLERX
+    class: equity
+    calendar: nse
+    fee_bps: 10
+    role: stock
+    currency: USD
+runs:
+  - id: cap-mix
+    strategy: cap_mix
+    drift: true
+    params:
+      history_from: 2000-01-01
+      trade_from: 2001-01-01
+      min_prints: 150
+      sleeves:
+        - n: 3
+          ids:
+          - EQ:XNSE:ADANIENT
+          - EQ:XNSE:ADANIPORTS
+          - EQ:XNSE:APOLLOHOSP
+          - EQ:XNSE:ASIANPAINT
+          - EQ:XNSE:AXISBANK
+          - EQ:XNSE:BAJAJ-AUTO
+          - EQ:XNSE:BAJFINANCE
+          - EQ:XNSE:BAJAJFINSV
+          - EQ:XNSE:BEL
+          - EQ:XNSE:BHARTIARTL
+          - EQ:XNSE:BSE
+          - EQ:XNSE:CIPLA
+          - EQ:XNSE:COALINDIA
+          - EQ:XNSE:DRREDDY
+          - EQ:XNSE:EICHERMOT
+          - EQ:XNSE:ETERNAL
+          - EQ:XNSE:GRASIM
+          - EQ:XNSE:HCLTECH
+          - EQ:XNSE:HDFCBANK
+          - EQ:XNSE:HDFCLIFE
+          - EQ:XNSE:HINDALCO
+          - EQ:XNSE:HINDUNILVR
+          - EQ:XNSE:ICICIBANK
+          - EQ:XNSE:INDIGO
+          - EQ:XNSE:INFY
+          - EQ:XNSE:ITC
+          - EQ:XNSE:JIOFIN
+          - EQ:XNSE:JSWSTEEL
+          - EQ:XNSE:KOTAKBANK
+          - EQ:XNSE:LT
+          - EQ:XNSE:MARUTI
+          - EQ:XNSE:MAXHEALTH
+          - EQ:XNSE:NESTLEIND
+          - EQ:XNSE:NTPC
+          - EQ:XNSE:ONGC
+          - EQ:XNSE:POWERGRID
+          - EQ:XNSE:RELIANCE
+          - EQ:XNSE:SBILIFE
+          - EQ:XNSE:SHRIRAMFIN
+          - EQ:XNSE:SBIN
+          - EQ:XNSE:SUNPHARMA
+          - EQ:XNSE:TCS
+          - EQ:XNSE:TATACONSUM
+          - EQ:XNSE:TMPV
+          - EQ:XNSE:TATASTEEL
+          - EQ:XNSE:TECHM
+          - EQ:XNSE:TITAN
+          - EQ:XNSE:TRENT
+          - EQ:XNSE:ULTRACEMCO
+          - EQ:XNSE:M&M
+        - n: 1
+          ids:
+          - EQ:XNSE:360ONE
+          - EQ:XNSE:AIAENG
+          - EQ:XNSE:APLAPOLLO
+          - EQ:XNSE:AUBANK
+          - EQ:XNSE:ABBOTINDIA
+          - EQ:XNSE:ATGL
+          - EQ:XNSE:ABCAPITAL
+          - EQ:XNSE:AJANTPHARM
+          - EQ:XNSE:ALKEM
+          - EQ:XNSE:ANTHEM
+          - EQ:XNSE:APARINDS
+          - EQ:XNSE:ASHOKLEY
+          - EQ:XNSE:ASTERDM
+          - EQ:XNSE:ASTRAL
+          - EQ:XNSE:AUROPHARMA
+          - EQ:XNSE:AIIL
+          - EQ:XNSE:BAJAJHFL
+          - EQ:XNSE:BALKRISIND
+          - EQ:XNSE:BANKINDIA
+          - EQ:XNSE:MAHABANK
+          - EQ:XNSE:BERGEPAINT
+          - EQ:XNSE:BDL
+          - EQ:XNSE:BHARATFORG
+          - EQ:XNSE:BHEL
+          - EQ:XNSE:BHARTIHEXA
+          - EQ:XNSE:GROWW
+          - EQ:XNSE:BIOCON
+          - EQ:XNSE:BLUESTARCO
+          - EQ:XNSE:CRISIL
+          - EQ:XNSE:COCHINSHIP
+          - EQ:XNSE:COFORGE
+          - EQ:XNSE:COLPAL
+          - EQ:XNSE:CONCOR
+          - EQ:XNSE:COROMANDEL
+          - EQ:XNSE:DABUR
+          - EQ:XNSE:DALBHARAT
+          - EQ:XNSE:DIXON
+          - EQ:XNSE:EMBASSY
+          - EQ:XNSE:ENDURANCE
+          - EQ:XNSE:ESCORTS
+          - EQ:XNSE:EXIDEIND
+          - EQ:XNSE:NYKAA
+          - EQ:XNSE:FEDERALBNK
+          - EQ:XNSE:FACT
+          - EQ:XNSE:FORTIS
+          - EQ:XNSE:GVT&D
+          - EQ:XNSE:GMRAIRPORT
+          - EQ:XNSE:GICRE
+          - EQ:XNSE:GLAXO
+          - EQ:XNSE:GLENMARK
+          - EQ:XNSE:MEDANTA
+          - EQ:XNSE:GODFRYPHLP
+          - EQ:XNSE:GODREJIND
+          - EQ:XNSE:GODREJPROP
+          - EQ:XNSE:FLUOROCHEM
+          - EQ:XNSE:HDBFS
+          - EQ:XNSE:HAVELLS
+          - EQ:XNSE:HEROMOTOCO
+          - EQ:XNSE:HEXT
+          - EQ:XNSE:HINDCOPPER
+          - EQ:XNSE:HINDPETRO
+          - EQ:XNSE:HUDCO
+          - EQ:XNSE:ICICIGI
+          - EQ:XNSE:ICICIAMC
+          - EQ:XNSE:ICICIPRULI
+          - EQ:XNSE:IDFCFIRSTB
+          - EQ:XNSE:ITCHOTELS
+          - EQ:XNSE:INDIANB
+          - EQ:XNSE:INDHOTEL
+          - EQ:XNSE:IOB
+          - EQ:XNSE:IRCTC
+          - EQ:XNSE:IREDA
+          - EQ:XNSE:INDUSTOWER
+          - EQ:XNSE:INDUSINDBK
+          - EQ:XNSE:NAUKRI
+          - EQ:XNSE:IPCALAB
+          - EQ:XNSE:JKCEMENT
+          - EQ:XNSE:JSWENERGY
+          - EQ:XNSE:JSWINFRA
+          - EQ:XNSE:JSL
+          - EQ:XNSE:JUBLFOOD
+          - EQ:XNSE:KPRMILL
+          - EQ:XNSE:KEI
+          - EQ:XNSE:KALYANKJIL
+          - EQ:XNSE:LTF
+          - EQ:XNSE:LTTS
+          - EQ:XNSE:LGEINDIA
+          - EQ:XNSE:LICHSGFIN
+          - EQ:XNSE:LAURUSLABS
+          - EQ:XNSE:LENSKART
+          - EQ:XNSE:LICI
+          - EQ:XNSE:LINDEINDIA
+          - EQ:XNSE:LLOYDSME
+          - EQ:XNSE:LODHA
+          - EQ:XNSE:LUPIN
+          - EQ:XNSE:MRF
+          - EQ:XNSE:M&MFIN
+          - EQ:XNSE:MANKIND
+          - EQ:XNSE:MARICO
+          - EQ:XNSE:MFSL
+          - EQ:XNSE:MEESHO
+          - EQ:XNSE:MOTILALOFS
+          - EQ:XNSE:MPHASIS
+          - EQ:XNSE:MCX
+          - EQ:XNSE:NHPC
+          - EQ:XNSE:NLCINDIA
+          - EQ:XNSE:NMDC
+          - EQ:XNSE:NTPCGREEN
+          - EQ:XNSE:NH
+          - EQ:XNSE:NATIONALUM
+          - EQ:XNSE:NAM-INDIA
+          - EQ:XNSE:OBEROIRLTY
+          - EQ:XNSE:OIL
+          - EQ:XNSE:PAYTM
+          - EQ:XNSE:OFSS
+          - EQ:XNSE:POLICYBZR
+          - EQ:XNSE:PIIND
+          - EQ:XNSE:PAGEIND
+          - EQ:XNSE:PATANJALI
+          - EQ:XNSE:PERSISTENT
+          - EQ:XNSE:PETRONET
+          - EQ:XNSE:PHOENIXLTD
+          - EQ:XNSE:PIRAMALFIN
+          - EQ:XNSE:PREMIERENE
+          - EQ:XNSE:PRESTIGE
+          - EQ:XNSE:RECLTD
+          - EQ:XNSE:RADICO
+          - EQ:XNSE:RVNL
+          - EQ:XNSE:SBICARD
+          - EQ:XNSE:SRF
+          - EQ:XNSE:SCHAEFFLER
+          - EQ:XNSE:SHREECEM
+          - EQ:XNSE:SAIL
+          - EQ:XNSE:SUNDARMFIN
+          - EQ:XNSE:SUPREMEIND
+          - EQ:XNSE:SUZLON
+          - EQ:XNSE:SWIGGY
+          - EQ:XNSE:TATACOMM
+          - EQ:XNSE:TATAINVEST
+          - EQ:XNSE:THERMAX
+          - EQ:XNSE:TORNTPOWER
+          - EQ:XNSE:TIINDIA
+          - EQ:XNSE:UNOMINDA
+          - EQ:XNSE:UPL
+          - EQ:XNSE:UBL
+          - EQ:XNSE:UNITDSPR
+          - EQ:XNSE:VMM
+          - EQ:XNSE:VOLTAS
+          - EQ:XNSE:WAAREEENER
+          - EQ:XNSE:YESBANK
+        - n: 1
+          ids:
+          - EQ:XNSE:ACC
+          - EQ:XNSE:ACMESOLAR
+          - EQ:XNSE:AWL
+          - EQ:XNSE:AADHARHFC
+          - EQ:XNSE:AARTIIND
+          - EQ:XNSE:AAVAS
+          - EQ:XNSE:ACE
+          - EQ:XNSE:ACUTAAS
+          - EQ:XNSE:ABREL
+          - EQ:XNSE:ABSLAMC
+          - EQ:XNSE:CPPLUS
+          - EQ:XNSE:AEGISLOG
+          - EQ:XNSE:AEGISVOPAK
+          - EQ:XNSE:AETHER
+          - EQ:XNSE:AFCONS
+          - EQ:XNSE:AFFLE
+          - EQ:XNSE:ABDL
+          - EQ:XNSE:ARE&M
+          - EQ:XNSE:AMBER
+          - EQ:XNSE:ANANDRATHI
+          - EQ:XNSE:ANANTRAJ
+          - EQ:XNSE:ANGELONE
+          - EQ:XNSE:ANURAS
+          - EQ:XNSE:APOLLOTYRE
+          - EQ:XNSE:APTUS
+          - EQ:XNSE:ASAHIINDIA
+          - EQ:XNSE:ATHERENERG
+          - EQ:XNSE:ATUL
+          - EQ:XNSE:AVANTIFEED
+          - EQ:XNSE:AZAD
+          - EQ:XNSE:BEML
+          - EQ:XNSE:BLS
+          - EQ:XNSE:BALRAMCHIN
+          - EQ:XNSE:BANDHANBNK
+          - EQ:XNSE:BATAINDIA
+          - EQ:XNSE:BELRISE
+          - EQ:XNSE:BHARATCOAL
+          - EQ:XNSE:BSOFT
+          - EQ:XNSE:BBOX
+          - EQ:XNSE:FIRSTCRY
+          - EQ:XNSE:BRIGADE
+          - EQ:XNSE:BIRET
+          - EQ:XNSE:CCL
+          - EQ:XNSE:CESC
+          - EQ:XNSE:CIEINDIA
+          - EQ:XNSE:CANFINHOME
+          - EQ:XNSE:CANHLIFE
+          - EQ:XNSE:CAPLIPOINT
+          - EQ:XNSE:CGCL
+          - EQ:XNSE:CARBORUNIV
+          - EQ:XNSE:CARTRADE
+          - EQ:XNSE:CASTROLIND
+          - EQ:XNSE:CEATLTD
+          - EQ:XNSE:CEMPRO
+          - EQ:XNSE:CENTRALBK
+          - EQ:XNSE:CDSL
+          - EQ:XNSE:CMPDI
+          - EQ:XNSE:CHAMBLFERT
+          - EQ:XNSE:CHENNPETRO
+          - EQ:XNSE:CHOICEIN
+          - EQ:XNSE:CHOLAHLDNG
+          - EQ:XNSE:CUB
+          - EQ:XNSE:CLEANMAX
+          - EQ:XNSE:CLEAN
+          - EQ:XNSE:COHANCE
+          - EQ:XNSE:CAMS
+          - EQ:XNSE:CONCORDBIO
+          - EQ:XNSE:CRAFTSMAN
+          - EQ:XNSE:CREDITACC
+          - EQ:XNSE:CROMPTON
+          - EQ:XNSE:CUPID
+          - EQ:XNSE:CYIENT
+          - EQ:XNSE:DOMS
+          - EQ:XNSE:DATAPATTNS
+          - EQ:XNSE:DEEPAKFERT
+          - EQ:XNSE:DEEPAKNTR
+          - EQ:XNSE:DELHIVERY
+          - EQ:XNSE:DEVYANI
+          - EQ:XNSE:LALPATHLAB
+          - EQ:XNSE:EIDPARRY
+          - EQ:XNSE:EIHOTEL
+          - EQ:XNSE:ELECON
+          - EQ:XNSE:ELGIEQUIP
+          - EQ:XNSE:EMAMILTD
+          - EQ:XNSE:EMCURE
+          - EQ:XNSE:EMMVEE
+          - EQ:XNSE:ENGINERSIN
+          - EQ:XNSE:FINCABLES
+          - EQ:XNSE:FSL
+          - EQ:XNSE:FIVESTAR
+          - EQ:XNSE:FORCEMOT
+          - EQ:XNSE:FRACTAL
+          - EQ:XNSE:GABRIEL
+          - EQ:XNSE:GALLANTT
+          - EQ:XNSE:GRSE
+          - EQ:XNSE:GILLETTE
+          - EQ:XNSE:GLAND
+          - EQ:XNSE:GPIL
+          - EQ:XNSE:GRANULES
+          - EQ:XNSE:GRAPHITE
+          - EQ:XNSE:GRAVITA
+          - EQ:XNSE:GESHIP
+          - EQ:XNSE:GMDCLTD
+          - EQ:XNSE:HBLENGINE
+          - EQ:XNSE:HEGAM
+          - EQ:XNSE:HFCL
+          - EQ:XNSE:HSCL
+          - EQ:XNSE:HOMEFIRST
+          - EQ:XNSE:HONASA
+          - EQ:XNSE:HONAUT
+          - EQ:XNSE:IDBI
+          - EQ:XNSE:IFCI
+          - EQ:XNSE:IIFL
+          - EQ:XNSE:INOXINDIA
+          - EQ:XNSE:IRB
+          - EQ:XNSE:IRCON
+          - EQ:XNSE:ITI
+          - EQ:XNSE:INDIACEM
+          - EQ:XNSE:INDIAMART
+          - EQ:XNSE:IEX
+          - EQ:XNSE:IGL
+          - EQ:XNSE:INOXWIND
+          - EQ:XNSE:INTELLECT
+          - EQ:XNSE:IGIL
+          - EQ:XNSE:IKS
+          - EQ:XNSE:JBMA
+          - EQ:XNSE:JKTYRE
+          - EQ:XNSE:JMFINANCIL
+          - EQ:XNSE:JSWCEMENT
+          - EQ:XNSE:JAINREC
+          - EQ:XNSE:JPPOWER
+          - EQ:XNSE:J&KBANK
+          - EQ:XNSE:JINDALSAW
+          - EQ:XNSE:JUBLINGREA
+          - EQ:XNSE:JWL
+          - EQ:XNSE:JYOTICNC
+          - EQ:XNSE:KPITTECH
+          - EQ:XNSE:KSB
+          - EQ:XNSE:KAJARIACER
+          - EQ:XNSE:KPIL
+          - EQ:XNSE:KARURVYSYA
+          - EQ:XNSE:KAYNES
+          - EQ:XNSE:KEC
+          - EQ:XNSE:KFINTECH
+          - EQ:XNSE:KIRLOSBROS
+          - EQ:XNSE:KIRLOSENG
+          - EQ:XNSE:KIMS
+          - EQ:XNSE:LTFOODS
+          - EQ:XNSE:LEMONTREE
+          - EQ:XNSE:MMTC
+          - EQ:XNSE:MTARTECH
+          - EQ:XNSE:MGL
+          - EQ:XNSE:MANAPPURAM
+          - EQ:XNSE:MRPL
+          - EQ:XNSE:MINDACORP
+          - EQ:XNSE:MSUMI
+          - EQ:XNSE:NATCOPHARM
+          - EQ:XNSE:NBCC
+          - EQ:XNSE:NCC
+          - EQ:XNSE:NSLNISP
+          - EQ:XNSE:NAVA
+          - EQ:XNSE:NAVINFLUOR
+          - EQ:XNSE:NETWEB
+          - EQ:XNSE:NEULANDLAB
+          - EQ:XNSE:NUVAMA
+          - EQ:XNSE:NUVOCO
+          - EQ:XNSE:OLAELEC
+          - EQ:XNSE:OLECTRA
+          - EQ:XNSE:ONESOURCE
+          - EQ:XNSE:PCBL
+          - EQ:XNSE:PGEL
+          - EQ:XNSE:PNBHOUSING
+          - EQ:XNSE:PTCIL
+          - EQ:XNSE:PVRINOX
+          - EQ:XNSE:PARADEEP
+          - EQ:XNSE:PWL
+          - EQ:XNSE:PINELABS
+          - EQ:XNSE:PPLPHARMA
+          - EQ:XNSE:POLYMED
+          - EQ:XNSE:POONAWALLA
+          - EQ:XNSE:PFOCUS
+          - EQ:XNSE:PRIVISCL
+          - EQ:XNSE:RRKABEL
+          - EQ:XNSE:RBLBANK
+          - EQ:XNSE:RHIM
+          - EQ:XNSE:RITES
+          - EQ:XNSE:RAILTEL
+          - EQ:XNSE:RAINBOW
+          - EQ:XNSE:RKFORGE
+          - EQ:XNSE:REDINGTON
+          - EQ:XNSE:RPOWER
+          - EQ:XNSE:RUBICON
+          - EQ:XNSE:SJVN
+          - EQ:XNSE:SHRIPISTON
+          - EQ:XNSE:SAGILITY
+          - EQ:XNSE:SAILIFE
+          - EQ:XNSE:SAMMAANCAP
+          - EQ:XNSE:SANSERA
+          - EQ:XNSE:SARDAEN
+          - EQ:XNSE:SCHNEIDER
+          - EQ:XNSE:SCI
+          - EQ:XNSE:SHYAMMETL
+          - EQ:XNSE:SIGNATURE
+          - EQ:XNSE:SOBHA
+          - EQ:XNSE:SONACOMS
+          - EQ:XNSE:STARHEALTH
+          - EQ:XNSE:STLTECH
+          - EQ:XNSE:SUMICHEM
+          - EQ:XNSE:SUNTV
+          - EQ:XNSE:SWANCORP
+          - EQ:XNSE:SYNGENE
+          - EQ:XNSE:SYRMA
+          - EQ:XNSE:TBOTEK
+          - EQ:XNSE:TDPOWERSYS
+          - EQ:XNSE:TATACHEM
+          - EQ:XNSE:TATAELXSI
+          - EQ:XNSE:TATATECH
+          - EQ:XNSE:TTML
+          - EQ:XNSE:TECHNOE
+          - EQ:XNSE:TEGA
+          - EQ:XNSE:TEJASNET
+          - EQ:XNSE:TENNIND
+          - EQ:XNSE:THANGAMAYL
+          - EQ:XNSE:NIACL
+          - EQ:XNSE:RAMCOCEM
+          - EQ:XNSE:TIMKEN
+          - EQ:XNSE:TITAGARH
+          - EQ:XNSE:TARIL
+          - EQ:XNSE:TRIDENT
+          - EQ:XNSE:TRITURBINE
+          - EQ:XNSE:UCOBANK
+          - EQ:XNSE:UTIAMC
+          - EQ:XNSE:URBANCO
+          - EQ:XNSE:USHAMART
+          - EQ:XNSE:VTL
+          - EQ:XNSE:VISL
+          - EQ:XNSE:VOGL
+          - EQ:XNSE:VEDPOWER
+          - EQ:XNSE:VIJAYA
+          - EQ:XNSE:WELCORP
+          - EQ:XNSE:WELSPUNLIV
+          - EQ:XNSE:WHIRLPOOL
+          - EQ:XNSE:WOCKPHARMA
+          - EQ:XNSE:ZFCVINDIA
+          - EQ:XNSE:ZEEL
+          - EQ:XNSE:ZENTEC
+          - EQ:XNSE:ZENSARTECH
+          - EQ:XNSE:ZYDUSWELL
+          - EQ:XNSE:ECLERX
+  - id: cap-mix-333
+    strategy: cap_mix
+    drift: true
+    params:
+      history_from: 2000-01-01
+      trade_from: 2001-01-01
+      min_prints: 150
+      sleeves:
+        - n: 3
+          ids:
+          - EQ:XNSE:ADANIENT
+          - EQ:XNSE:ADANIPORTS
+          - EQ:XNSE:APOLLOHOSP
+          - EQ:XNSE:ASIANPAINT
+          - EQ:XNSE:AXISBANK
+          - EQ:XNSE:BAJAJ-AUTO
+          - EQ:XNSE:BAJFINANCE
+          - EQ:XNSE:BAJAJFINSV
+          - EQ:XNSE:BEL
+          - EQ:XNSE:BHARTIARTL
+          - EQ:XNSE:BSE
+          - EQ:XNSE:CIPLA
+          - EQ:XNSE:COALINDIA
+          - EQ:XNSE:DRREDDY
+          - EQ:XNSE:EICHERMOT
+          - EQ:XNSE:ETERNAL
+          - EQ:XNSE:GRASIM
+          - EQ:XNSE:HCLTECH
+          - EQ:XNSE:HDFCBANK
+          - EQ:XNSE:HDFCLIFE
+          - EQ:XNSE:HINDALCO
+          - EQ:XNSE:HINDUNILVR
+          - EQ:XNSE:ICICIBANK
+          - EQ:XNSE:INDIGO
+          - EQ:XNSE:INFY
+          - EQ:XNSE:ITC
+          - EQ:XNSE:JIOFIN
+          - EQ:XNSE:JSWSTEEL
+          - EQ:XNSE:KOTAKBANK
+          - EQ:XNSE:LT
+          - EQ:XNSE:MARUTI
+          - EQ:XNSE:MAXHEALTH
+          - EQ:XNSE:NESTLEIND
+          - EQ:XNSE:NTPC
+          - EQ:XNSE:ONGC
+          - EQ:XNSE:POWERGRID
+          - EQ:XNSE:RELIANCE
+          - EQ:XNSE:SBILIFE
+          - EQ:XNSE:SHRIRAMFIN
+          - EQ:XNSE:SBIN
+          - EQ:XNSE:SUNPHARMA
+          - EQ:XNSE:TCS
+          - EQ:XNSE:TATACONSUM
+          - EQ:XNSE:TMPV
+          - EQ:XNSE:TATASTEEL
+          - EQ:XNSE:TECHM
+          - EQ:XNSE:TITAN
+          - EQ:XNSE:TRENT
+          - EQ:XNSE:ULTRACEMCO
+          - EQ:XNSE:M&M
+        - n: 3
+          ids:
+          - EQ:XNSE:360ONE
+          - EQ:XNSE:AIAENG
+          - EQ:XNSE:APLAPOLLO
+          - EQ:XNSE:AUBANK
+          - EQ:XNSE:ABBOTINDIA
+          - EQ:XNSE:ATGL
+          - EQ:XNSE:ABCAPITAL
+          - EQ:XNSE:AJANTPHARM
+          - EQ:XNSE:ALKEM
+          - EQ:XNSE:ANTHEM
+          - EQ:XNSE:APARINDS
+          - EQ:XNSE:ASHOKLEY
+          - EQ:XNSE:ASTERDM
+          - EQ:XNSE:ASTRAL
+          - EQ:XNSE:AUROPHARMA
+          - EQ:XNSE:AIIL
+          - EQ:XNSE:BAJAJHFL
+          - EQ:XNSE:BALKRISIND
+          - EQ:XNSE:BANKINDIA
+          - EQ:XNSE:MAHABANK
+          - EQ:XNSE:BERGEPAINT
+          - EQ:XNSE:BDL
+          - EQ:XNSE:BHARATFORG
+          - EQ:XNSE:BHEL
+          - EQ:XNSE:BHARTIHEXA
+          - EQ:XNSE:GROWW
+          - EQ:XNSE:BIOCON
+          - EQ:XNSE:BLUESTARCO
+          - EQ:XNSE:CRISIL
+          - EQ:XNSE:COCHINSHIP
+          - EQ:XNSE:COFORGE
+          - EQ:XNSE:COLPAL
+          - EQ:XNSE:CONCOR
+          - EQ:XNSE:COROMANDEL
+          - EQ:XNSE:DABUR
+          - EQ:XNSE:DALBHARAT
+          - EQ:XNSE:DIXON
+          - EQ:XNSE:EMBASSY
+          - EQ:XNSE:ENDURANCE
+          - EQ:XNSE:ESCORTS
+          - EQ:XNSE:EXIDEIND
+          - EQ:XNSE:NYKAA
+          - EQ:XNSE:FEDERALBNK
+          - EQ:XNSE:FACT
+          - EQ:XNSE:FORTIS
+          - EQ:XNSE:GVT&D
+          - EQ:XNSE:GMRAIRPORT
+          - EQ:XNSE:GICRE
+          - EQ:XNSE:GLAXO
+          - EQ:XNSE:GLENMARK
+          - EQ:XNSE:MEDANTA
+          - EQ:XNSE:GODFRYPHLP
+          - EQ:XNSE:GODREJIND
+          - EQ:XNSE:GODREJPROP
+          - EQ:XNSE:FLUOROCHEM
+          - EQ:XNSE:HDBFS
+          - EQ:XNSE:HAVELLS
+          - EQ:XNSE:HEROMOTOCO
+          - EQ:XNSE:HEXT
+          - EQ:XNSE:HINDCOPPER
+          - EQ:XNSE:HINDPETRO
+          - EQ:XNSE:HUDCO
+          - EQ:XNSE:ICICIGI
+          - EQ:XNSE:ICICIAMC
+          - EQ:XNSE:ICICIPRULI
+          - EQ:XNSE:IDFCFIRSTB
+          - EQ:XNSE:ITCHOTELS
+          - EQ:XNSE:INDIANB
+          - EQ:XNSE:INDHOTEL
+          - EQ:XNSE:IOB
+          - EQ:XNSE:IRCTC
+          - EQ:XNSE:IREDA
+          - EQ:XNSE:INDUSTOWER
+          - EQ:XNSE:INDUSINDBK
+          - EQ:XNSE:NAUKRI
+          - EQ:XNSE:IPCALAB
+          - EQ:XNSE:JKCEMENT
+          - EQ:XNSE:JSWENERGY
+          - EQ:XNSE:JSWINFRA
+          - EQ:XNSE:JSL
+          - EQ:XNSE:JUBLFOOD
+          - EQ:XNSE:KPRMILL
+          - EQ:XNSE:KEI
+          - EQ:XNSE:KALYANKJIL
+          - EQ:XNSE:LTF
+          - EQ:XNSE:LTTS
+          - EQ:XNSE:LGEINDIA
+          - EQ:XNSE:LICHSGFIN
+          - EQ:XNSE:LAURUSLABS
+          - EQ:XNSE:LENSKART
+          - EQ:XNSE:LICI
+          - EQ:XNSE:LINDEINDIA
+          - EQ:XNSE:LLOYDSME
+          - EQ:XNSE:LODHA
+          - EQ:XNSE:LUPIN
+          - EQ:XNSE:MRF
+          - EQ:XNSE:M&MFIN
+          - EQ:XNSE:MANKIND
+          - EQ:XNSE:MARICO
+          - EQ:XNSE:MFSL
+          - EQ:XNSE:MEESHO
+          - EQ:XNSE:MOTILALOFS
+          - EQ:XNSE:MPHASIS
+          - EQ:XNSE:MCX
+          - EQ:XNSE:NHPC
+          - EQ:XNSE:NLCINDIA
+          - EQ:XNSE:NMDC
+          - EQ:XNSE:NTPCGREEN
+          - EQ:XNSE:NH
+          - EQ:XNSE:NATIONALUM
+          - EQ:XNSE:NAM-INDIA
+          - EQ:XNSE:OBEROIRLTY
+          - EQ:XNSE:OIL
+          - EQ:XNSE:PAYTM
+          - EQ:XNSE:OFSS
+          - EQ:XNSE:POLICYBZR
+          - EQ:XNSE:PIIND
+          - EQ:XNSE:PAGEIND
+          - EQ:XNSE:PATANJALI
+          - EQ:XNSE:PERSISTENT
+          - EQ:XNSE:PETRONET
+          - EQ:XNSE:PHOENIXLTD
+          - EQ:XNSE:PIRAMALFIN
+          - EQ:XNSE:PREMIERENE
+          - EQ:XNSE:PRESTIGE
+          - EQ:XNSE:RECLTD
+          - EQ:XNSE:RADICO
+          - EQ:XNSE:RVNL
+          - EQ:XNSE:SBICARD
+          - EQ:XNSE:SRF
+          - EQ:XNSE:SCHAEFFLER
+          - EQ:XNSE:SHREECEM
+          - EQ:XNSE:SAIL
+          - EQ:XNSE:SUNDARMFIN
+          - EQ:XNSE:SUPREMEIND
+          - EQ:XNSE:SUZLON
+          - EQ:XNSE:SWIGGY
+          - EQ:XNSE:TATACOMM
+          - EQ:XNSE:TATAINVEST
+          - EQ:XNSE:THERMAX
+          - EQ:XNSE:TORNTPOWER
+          - EQ:XNSE:TIINDIA
+          - EQ:XNSE:UNOMINDA
+          - EQ:XNSE:UPL
+          - EQ:XNSE:UBL
+          - EQ:XNSE:UNITDSPR
+          - EQ:XNSE:VMM
+          - EQ:XNSE:VOLTAS
+          - EQ:XNSE:WAAREEENER
+          - EQ:XNSE:YESBANK
+        - n: 3
+          ids:
+          - EQ:XNSE:ACC
+          - EQ:XNSE:ACMESOLAR
+          - EQ:XNSE:AWL
+          - EQ:XNSE:AADHARHFC
+          - EQ:XNSE:AARTIIND
+          - EQ:XNSE:AAVAS
+          - EQ:XNSE:ACE
+          - EQ:XNSE:ACUTAAS
+          - EQ:XNSE:ABREL
+          - EQ:XNSE:ABSLAMC
+          - EQ:XNSE:CPPLUS
+          - EQ:XNSE:AEGISLOG
+          - EQ:XNSE:AEGISVOPAK
+          - EQ:XNSE:AETHER
+          - EQ:XNSE:AFCONS
+          - EQ:XNSE:AFFLE
+          - EQ:XNSE:ABDL
+          - EQ:XNSE:ARE&M
+          - EQ:XNSE:AMBER
+          - EQ:XNSE:ANANDRATHI
+          - EQ:XNSE:ANANTRAJ
+          - EQ:XNSE:ANGELONE
+          - EQ:XNSE:ANURAS
+          - EQ:XNSE:APOLLOTYRE
+          - EQ:XNSE:APTUS
+          - EQ:XNSE:ASAHIINDIA
+          - EQ:XNSE:ATHERENERG
+          - EQ:XNSE:ATUL
+          - EQ:XNSE:AVANTIFEED
+          - EQ:XNSE:AZAD
+          - EQ:XNSE:BEML
+          - EQ:XNSE:BLS
+          - EQ:XNSE:BALRAMCHIN
+          - EQ:XNSE:BANDHANBNK
+          - EQ:XNSE:BATAINDIA
+          - EQ:XNSE:BELRISE
+          - EQ:XNSE:BHARATCOAL
+          - EQ:XNSE:BSOFT
+          - EQ:XNSE:BBOX
+          - EQ:XNSE:FIRSTCRY
+          - EQ:XNSE:BRIGADE
+          - EQ:XNSE:BIRET
+          - EQ:XNSE:CCL
+          - EQ:XNSE:CESC
+          - EQ:XNSE:CIEINDIA
+          - EQ:XNSE:CANFINHOME
+          - EQ:XNSE:CANHLIFE
+          - EQ:XNSE:CAPLIPOINT
+          - EQ:XNSE:CGCL
+          - EQ:XNSE:CARBORUNIV
+          - EQ:XNSE:CARTRADE
+          - EQ:XNSE:CASTROLIND
+          - EQ:XNSE:CEATLTD
+          - EQ:XNSE:CEMPRO
+          - EQ:XNSE:CENTRALBK
+          - EQ:XNSE:CDSL
+          - EQ:XNSE:CMPDI
+          - EQ:XNSE:CHAMBLFERT
+          - EQ:XNSE:CHENNPETRO
+          - EQ:XNSE:CHOICEIN
+          - EQ:XNSE:CHOLAHLDNG
+          - EQ:XNSE:CUB
+          - EQ:XNSE:CLEANMAX
+          - EQ:XNSE:CLEAN
+          - EQ:XNSE:COHANCE
+          - EQ:XNSE:CAMS
+          - EQ:XNSE:CONCORDBIO
+          - EQ:XNSE:CRAFTSMAN
+          - EQ:XNSE:CREDITACC
+          - EQ:XNSE:CROMPTON
+          - EQ:XNSE:CUPID
+          - EQ:XNSE:CYIENT
+          - EQ:XNSE:DOMS
+          - EQ:XNSE:DATAPATTNS
+          - EQ:XNSE:DEEPAKFERT
+          - EQ:XNSE:DEEPAKNTR
+          - EQ:XNSE:DELHIVERY
+          - EQ:XNSE:DEVYANI
+          - EQ:XNSE:LALPATHLAB
+          - EQ:XNSE:EIDPARRY
+          - EQ:XNSE:EIHOTEL
+          - EQ:XNSE:ELECON
+          - EQ:XNSE:ELGIEQUIP
+          - EQ:XNSE:EMAMILTD
+          - EQ:XNSE:EMCURE
+          - EQ:XNSE:EMMVEE
+          - EQ:XNSE:ENGINERSIN
+          - EQ:XNSE:FINCABLES
+          - EQ:XNSE:FSL
+          - EQ:XNSE:FIVESTAR
+          - EQ:XNSE:FORCEMOT
+          - EQ:XNSE:FRACTAL
+          - EQ:XNSE:GABRIEL
+          - EQ:XNSE:GALLANTT
+          - EQ:XNSE:GRSE
+          - EQ:XNSE:GILLETTE
+          - EQ:XNSE:GLAND
+          - EQ:XNSE:GPIL
+          - EQ:XNSE:GRANULES
+          - EQ:XNSE:GRAPHITE
+          - EQ:XNSE:GRAVITA
+          - EQ:XNSE:GESHIP
+          - EQ:XNSE:GMDCLTD
+          - EQ:XNSE:HBLENGINE
+          - EQ:XNSE:HEGAM
+          - EQ:XNSE:HFCL
+          - EQ:XNSE:HSCL
+          - EQ:XNSE:HOMEFIRST
+          - EQ:XNSE:HONASA
+          - EQ:XNSE:HONAUT
+          - EQ:XNSE:IDBI
+          - EQ:XNSE:IFCI
+          - EQ:XNSE:IIFL
+          - EQ:XNSE:INOXINDIA
+          - EQ:XNSE:IRB
+          - EQ:XNSE:IRCON
+          - EQ:XNSE:ITI
+          - EQ:XNSE:INDIACEM
+          - EQ:XNSE:INDIAMART
+          - EQ:XNSE:IEX
+          - EQ:XNSE:IGL
+          - EQ:XNSE:INOXWIND
+          - EQ:XNSE:INTELLECT
+          - EQ:XNSE:IGIL
+          - EQ:XNSE:IKS
+          - EQ:XNSE:JBMA
+          - EQ:XNSE:JKTYRE
+          - EQ:XNSE:JMFINANCIL
+          - EQ:XNSE:JSWCEMENT
+          - EQ:XNSE:JAINREC
+          - EQ:XNSE:JPPOWER
+          - EQ:XNSE:J&KBANK
+          - EQ:XNSE:JINDALSAW
+          - EQ:XNSE:JUBLINGREA
+          - EQ:XNSE:JWL
+          - EQ:XNSE:JYOTICNC
+          - EQ:XNSE:KPITTECH
+          - EQ:XNSE:KSB
+          - EQ:XNSE:KAJARIACER
+          - EQ:XNSE:KPIL
+          - EQ:XNSE:KARURVYSYA
+          - EQ:XNSE:KAYNES
+          - EQ:XNSE:KEC
+          - EQ:XNSE:KFINTECH
+          - EQ:XNSE:KIRLOSBROS
+          - EQ:XNSE:KIRLOSENG
+          - EQ:XNSE:KIMS
+          - EQ:XNSE:LTFOODS
+          - EQ:XNSE:LEMONTREE
+          - EQ:XNSE:MMTC
+          - EQ:XNSE:MTARTECH
+          - EQ:XNSE:MGL
+          - EQ:XNSE:MANAPPURAM
+          - EQ:XNSE:MRPL
+          - EQ:XNSE:MINDACORP
+          - EQ:XNSE:MSUMI
+          - EQ:XNSE:NATCOPHARM
+          - EQ:XNSE:NBCC
+          - EQ:XNSE:NCC
+          - EQ:XNSE:NSLNISP
+          - EQ:XNSE:NAVA
+          - EQ:XNSE:NAVINFLUOR
+          - EQ:XNSE:NETWEB
+          - EQ:XNSE:NEULANDLAB
+          - EQ:XNSE:NUVAMA
+          - EQ:XNSE:NUVOCO
+          - EQ:XNSE:OLAELEC
+          - EQ:XNSE:OLECTRA
+          - EQ:XNSE:ONESOURCE
+          - EQ:XNSE:PCBL
+          - EQ:XNSE:PGEL
+          - EQ:XNSE:PNBHOUSING
+          - EQ:XNSE:PTCIL
+          - EQ:XNSE:PVRINOX
+          - EQ:XNSE:PARADEEP
+          - EQ:XNSE:PWL
+          - EQ:XNSE:PINELABS
+          - EQ:XNSE:PPLPHARMA
+          - EQ:XNSE:POLYMED
+          - EQ:XNSE:POONAWALLA
+          - EQ:XNSE:PFOCUS
+          - EQ:XNSE:PRIVISCL
+          - EQ:XNSE:RRKABEL
+          - EQ:XNSE:RBLBANK
+          - EQ:XNSE:RHIM
+          - EQ:XNSE:RITES
+          - EQ:XNSE:RAILTEL
+          - EQ:XNSE:RAINBOW
+          - EQ:XNSE:RKFORGE
+          - EQ:XNSE:REDINGTON
+          - EQ:XNSE:RPOWER
+          - EQ:XNSE:RUBICON
+          - EQ:XNSE:SJVN
+          - EQ:XNSE:SHRIPISTON
+          - EQ:XNSE:SAGILITY
+          - EQ:XNSE:SAILIFE
+          - EQ:XNSE:SAMMAANCAP
+          - EQ:XNSE:SANSERA
+          - EQ:XNSE:SARDAEN
+          - EQ:XNSE:SCHNEIDER
+          - EQ:XNSE:SCI
+          - EQ:XNSE:SHYAMMETL
+          - EQ:XNSE:SIGNATURE
+          - EQ:XNSE:SOBHA
+          - EQ:XNSE:SONACOMS
+          - EQ:XNSE:STARHEALTH
+          - EQ:XNSE:STLTECH
+          - EQ:XNSE:SUMICHEM
+          - EQ:XNSE:SUNTV
+          - EQ:XNSE:SWANCORP
+          - EQ:XNSE:SYNGENE
+          - EQ:XNSE:SYRMA
+          - EQ:XNSE:TBOTEK
+          - EQ:XNSE:TDPOWERSYS
+          - EQ:XNSE:TATACHEM
+          - EQ:XNSE:TATAELXSI
+          - EQ:XNSE:TATATECH
+          - EQ:XNSE:TTML
+          - EQ:XNSE:TECHNOE
+          - EQ:XNSE:TEGA
+          - EQ:XNSE:TEJASNET
+          - EQ:XNSE:TENNIND
+          - EQ:XNSE:THANGAMAYL
+          - EQ:XNSE:NIACL
+          - EQ:XNSE:RAMCOCEM
+          - EQ:XNSE:TIMKEN
+          - EQ:XNSE:TITAGARH
+          - EQ:XNSE:TARIL
+          - EQ:XNSE:TRIDENT
+          - EQ:XNSE:TRITURBINE
+          - EQ:XNSE:UCOBANK
+          - EQ:XNSE:UTIAMC
+          - EQ:XNSE:URBANCO
+          - EQ:XNSE:USHAMART
+          - EQ:XNSE:VTL
+          - EQ:XNSE:VISL
+          - EQ:XNSE:VOGL
+          - EQ:XNSE:VEDPOWER
+          - EQ:XNSE:VIJAYA
+          - EQ:XNSE:WELCORP
+          - EQ:XNSE:WELSPUNLIV
+          - EQ:XNSE:WHIRLPOOL
+          - EQ:XNSE:WOCKPHARMA
+          - EQ:XNSE:ZFCVINDIA
+          - EQ:XNSE:ZEEL
+          - EQ:XNSE:ZENTEC
+          - EQ:XNSE:ZENSARTECH
+          - EQ:XNSE:ZYDUSWELL
+          - EQ:XNSE:ECLERX

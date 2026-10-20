@@ -5,6 +5,7 @@ from __future__ import annotations
 from datetime import UTC, datetime
 from zoneinfo import ZoneInfo
 
+import polars as pl
 import pytest
 
 from backtester.domain import PairSnapshot, VendorBar
@@ -12,6 +13,7 @@ from backtester.normalize.bars import (
     is_partial_bar,
     normalize_vendor_bars,
     ohlc_valid,
+    repair_price_level_glitches,
     snapshot_quality,
     snapshots_to_frame,
     vendor_ts_to_utc,
@@ -103,6 +105,98 @@ def test_dedup_last_write_wins() -> None:
     frame = normalize_vendor_bars([first, second], inst, "1d", now=datetime(2025, 6, 1, tzinfo=UTC))
     assert frame.height == 1
     assert frame["close"][0] == pytest.approx(11.0)
+
+
+def test_adj_close_null_falls_back_to_close() -> None:
+    inst = aapl()
+    ts = datetime(2025, 1, 2, 14, 30, tzinfo=UTC)
+    frame = normalize_vendor_bars([vendor_bar(ts, c=10.5)], inst, "1d", now=datetime(2025, 6, 1, tzinfo=UTC))
+    assert float(frame["adj_close"][0]) == pytest.approx(10.5)
+
+
+def test_adj_close_from_vendor_is_stored() -> None:
+    inst = aapl()
+    ts = datetime(2025, 1, 2, 14, 30, tzinfo=UTC)
+    bar = VendorBar(
+        source="yahoo",
+        vendor_symbol="AAPL",
+        timeframe="1d",
+        ts=ts,
+        open=10,
+        high=11,
+        low=9,
+        close=10.5,
+        volume=100,
+        adj_close=8.0,
+    )
+    frame = normalize_vendor_bars([bar], inst, "1d", now=datetime(2025, 6, 1, tzinfo=UTC))
+    assert float(frame["close"][0]) == pytest.approx(10.5)
+    assert float(frame["adj_close"][0]) == pytest.approx(8.0)
+
+
+def _level_frame(closes: list[float]) -> pl.DataFrame:
+    stamps = [datetime(2019, 12, 1 + i, 18, 30, tzinfo=UTC) for i in range(len(closes))]
+    return pl.DataFrame(
+        {
+            "ts_utc": stamps,
+            "open": closes,
+            "high": [c * 1.01 for c in closes],
+            "low": [c * 0.99 for c in closes],
+            "close": closes,
+            "volume": [300_000.0] * len(closes),
+            "adj_close": closes,
+        }
+    ).with_columns(pl.col("ts_utc").dt.convert_time_zone("UTC"))
+
+
+def test_repair_scales_tenth_price_island() -> None:
+    closes = [130.0] * 8 + [13.0, 13.1] + [129.0] * 8
+    out = repair_price_level_glitches(_level_frame(closes))
+    assert float(out["close"][8]) == pytest.approx(130.0)
+    assert float(out["close"][9]) == pytest.approx(131.0)
+    assert float(out["open"][8]) == pytest.approx(130.0)
+    assert float(out["adj_close"][8]) == pytest.approx(130.0)
+    assert float(out["volume"][8]) == pytest.approx(30_000.0)
+    assert float(out["close"][0]) == pytest.approx(130.0)
+    assert float(out["close"][10]) == pytest.approx(129.0)
+
+
+def test_repair_scales_tenx_price_island() -> None:
+    closes = [130.0] * 8 + [1300.0, 1310.0] + [129.0] * 8
+    out = repair_price_level_glitches(_level_frame(closes))
+    assert float(out["close"][8]) == pytest.approx(130.0)
+    assert float(out["close"][9]) == pytest.approx(131.0)
+    assert float(out["volume"][8]) == pytest.approx(3_000_000.0)
+
+
+def test_repair_leaves_splits_and_crashes() -> None:
+    split = [100.0] * 10 + [10.0] * 10
+    crash = [100.0] * 10 + [70.0] * 10
+    split_out = repair_price_level_glitches(_level_frame(split))
+    crash_out = repair_price_level_glitches(_level_frame(crash))
+    assert split_out["close"].to_list() == split
+    assert crash_out["close"].to_list() == crash
+
+
+def test_normalize_repairs_yahoo_decimal_island() -> None:
+    inst = aapl()
+    now = datetime(2025, 6, 1, tzinfo=UTC)
+    bars = []
+    closes = [130.0] * 8 + [13.0, 13.1] + [129.0] * 8
+    for i, close in enumerate(closes):
+        bars.append(
+            vendor_bar(
+                datetime(2019, 12, 1 + i, 18, 30, tzinfo=UTC),
+                o=close,
+                h=close * 1.01,
+                low=close * 0.99,
+                c=close,
+                v=300_000.0,
+            )
+        )
+    frame = normalize_vendor_bars(bars, inst, "1d", now=now)
+    assert float(frame["close"][8]) == pytest.approx(130.0)
+    assert float(frame["close"][9]) == pytest.approx(131.0)
 
 
 def test_snapshot_quality_suspect_without_price() -> None:

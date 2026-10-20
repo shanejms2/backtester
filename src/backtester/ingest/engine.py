@@ -7,6 +7,7 @@ from datetime import UTC, datetime
 
 from backtester.adapters.alphavantage import AlphaVantageAdapter
 from backtester.adapters.base import SourceAdapter
+from backtester.adapters.bhavcopy import BhavcopyAdapter
 from backtester.adapters.ccxt_venue import CCXTVenueAdapter
 from backtester.adapters.dexscreener import DexScreenerAdapter
 from backtester.adapters.geckoterminal import GeckoTerminalAdapter
@@ -25,6 +26,10 @@ AdapterFactory = Callable[[str], SourceAdapter]
 
 KNOWN_BAR_SOURCES = frozenset({"yahoo", "alphavantage", "geckoterminal"})
 SNAPSHOT_SOURCE = "dexscreener"
+# Yahoo and Alpha Vantage accept one dated window. Bhavcopy walks session
+# days inside that window and caches each official zip. Uncoalesced holes
+# would write Coverage once per session.
+_RANGE_VENDORS = frozenset({"yahoo", "alphavantage", "bhavcopy"})
 
 
 class IngestEngine:
@@ -86,6 +91,7 @@ class IngestEngine:
             coverage,
             session=request.session,
         )
+        holes = _coalesce_range_vendor_holes(source, holes)
         if not holes:
             return IngestResult(
                 instrument=instrument,
@@ -127,10 +133,6 @@ class IngestEngine:
         if adapter.truncated():
             truncated = True
             warnings.append(f"{source} truncated history; Coverage marked only for returned spans.")
-
-        if truncated and rows:
-            # Coverage for truncated vendors is the span actually written, not the hole.
-            pass
 
         return IngestResult(
             instrument=instrument,
@@ -174,6 +176,7 @@ class IngestEngine:
                 max_ts = hi if max_ts is None else max(max_ts, hi)
         truncated = adapter.truncated()
         if truncated and min_ts is not None and max_ts is not None:
+            # Coverage is the span actually written, not the requested hole.
             self._store.update_coverage(
                 instrument.instrument_id,
                 timeframe,
@@ -267,8 +270,17 @@ class IngestEngine:
         return None
 
 
+def _coalesce_range_vendor_holes(source: str, holes: list[Interval]) -> list[Interval]:
+    """Collapse session-day holes into one window for range vendors."""
+    if source not in _RANGE_VENDORS or len(holes) <= 1:
+        return holes
+    return [Interval(start=holes[0].start, end=max(hole.end for hole in holes))]
+
+
 def default_adapter(source: str, settings: Settings) -> SourceAdapter:
     """Construct a live adapter for ``source``."""
+    if source == "bhavcopy":
+        return BhavcopyAdapter(settings.data_dir / "raw" / "bhavcopy")
     if source == "yahoo":
         return YahooAdapter()
     if source == "alphavantage":

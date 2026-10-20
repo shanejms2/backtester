@@ -1,0 +1,87 @@
+name: prism-six
+timeframe: 1d
+from: 2005-01-01               # GLD listed 2004; later names are null until they print
+source: yahoo                  # Spec default; crypto rows override
+clock: nyse_1600
+cash_rate_id: EQ:XNAS:IRX      # T-bill yield overlay; not a Universe name
+fx:
+  INR: EQ:CCY:INR              # Yahoo INR=X (rupees per USD); not clustered
+band_floor: 0.005
+band_frac: 0.20
+half_move: true
+allow_short: false
+universe:
+  - id: EQ:XNAS:QQQ
+    class: equity
+    calendar: nyse
+    fee_bps: 5
+    role: index_etf
+    source: yahoo
+  - id: EQ:XNSE:NIFTYBEES
+    class: equity
+    calendar: nse
+    fee_bps: 5
+    role: index_etf
+    currency: INR
+    source: yahoo
+  - id: EQ:ARCX:GLD
+    class: equity
+    calendar: nyse
+    fee_bps: 5
+    role: commodity_etf
+    source: yahoo
+  - id: EQ:ARCX:SLV
+    class: equity
+    calendar: nyse
+    fee_bps: 5
+    role: commodity_etf
+    source: yahoo
+  - id: CRYPTO:BINANCE:BTC/USDT
+    class: crypto
+    calendar: native_24_7
+    fee_bps: 15
+    role: crypto
+    source: binance
+  - id: EQ:ARCX:XLE
+    class: equity
+    calendar: nyse
+    fee_bps: 5
+    role: index_etf
+    source: yahoo
+runs:
+  - id: prism
+    strategy: prism
+  - id: prism-nocash
+    strategy: prism
+    params:
+      allow_cash: false
+  - id: qqq
+    strategy: static
+    params:
+      weights:
+        "EQ:XNAS:QQQ": 1.0
+  - id: nifty
+    strategy: static
+    params:
+      weights:
+        "EQ:XNSE:NIFTYBEES": 1.0
+  - id: gld
+    strategy: static
+    params:
+      weights:
+        "EQ:ARCX:GLD": 1.0
+  - id: slv
+    strategy: static
+    params:
+      weights:
+        "EQ:ARCX:SLV": 1.0
+  - id: btc
+    strategy: static
+    params:
+      weights:
+        "CRYPTO:BINANCE:BTC/USDT": 1.0
+  - id: xle
+    strategy: static
+    params:
+      weights:
+        "EQ:ARCX:XLE": 1.0

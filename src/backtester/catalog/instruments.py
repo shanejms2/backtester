@@ -21,6 +21,10 @@ _SOL = re.compile(r"^[1-9A-HJ-NP-Za-km-z]{32,44}$")
 _ID = re.compile(r"^(EQ|CRYPTO|DEX):", re.IGNORECASE)
 
 # Tiny MIC hints. Unknown US tickers default to XNAS (plan layout uses XNAS:AAPL).
+# Yahoo cash-rate / index names are stored without a caret (EQ:XNAS:IRX) and
+# fetched as ^IRX. Query ^IRX must not synthesize EQ:XNAS:^IRX. NDX is the
+# Nasdaq-100 index, the pre-1999 stand-in for QQQ.
+YAHOO_INDEX_TICKERS = frozenset({"IRX", "NDX"})
 _NYSE_TICKERS = frozenset(
     {
         "IBM",
@@ -212,7 +216,7 @@ class InstrumentCatalog:
     ) -> Instrument:
         if _ID.match(text):
             cls, ven, sym = parse_instrument_id(text)
-            return _build(cls, ven, sym, aliases=(text, sym))
+            return _build(cls, ven, sym, aliases=_equity_aliases(text, sym) if cls == "equity" else (text, sym))
 
         url = _PAIR_URL.match(text)
         if url:
@@ -231,9 +235,9 @@ class InstrumentCatalog:
             return _build("crypto", exch, sym, aliases=(text, sym, iid))
 
         mic = (venue or _equity_venue(text)).upper()
-        symbol = text.split(":")[-1].upper()
+        symbol = _equity_symbol(text)
         iid = f"EQ:{mic}:{symbol}"
-        return _build("equity", mic, symbol, aliases=(text, symbol, iid))
+        return _build("equity", mic, symbol, aliases=_equity_aliases(text, symbol, iid))
 
 
 def instruments_from_row(row: Mapping[str, object]) -> Instrument:
@@ -263,20 +267,49 @@ def instruments_from_row(row: Mapping[str, object]) -> Instrument:
     )
 
 
+def yahoo_ticker(instrument: Instrument) -> str:
+    """Yahoo Finance symbol for ``instrument`` (caret, NSE ``.NS``, FX ``=X``)."""
+    for alias in instrument.aliases:
+        text = alias.strip()
+        if text.startswith("^") or text.upper().endswith(".NS") or text.upper().endswith("=X"):
+            return text
+    symbol = instrument.symbol
+    if symbol.startswith("^"):
+        return symbol
+    venue = instrument.venue.upper()
+    if venue == "XNSE":
+        return symbol if symbol.upper().endswith(".NS") else f"{symbol}.NS"
+    if venue == "CCY":
+        return symbol if symbol.upper().endswith("=X") else f"{symbol}=X"
+    if instrument.asset_class == "equity" and symbol.upper() in YAHOO_INDEX_TICKERS:
+        return f"^{symbol.upper()}"
+    return symbol
+
+
 def _build(asset_class: AssetClass, venue: str, symbol: str, aliases: tuple[str, ...]) -> Instrument:
-    session_tz = "America/New_York" if asset_class == "equity" else "UTC"
     if asset_class == "equity":
-        iid = f"EQ:{venue.upper()}:{symbol.upper()}"
+        symbol_out = _equity_symbol(symbol)
         venue_out = venue.upper()
-        symbol_out = symbol.upper()
+        iid = f"EQ:{venue_out}:{symbol_out}"
+        aliases = _equity_aliases(*aliases, symbol_out, iid)
+        if venue_out == "XNSE":
+            aliases = _equity_aliases(*aliases, f"{symbol_out}.NS")
+            session_tz = "Asia/Kolkata"
+        elif venue_out == "CCY":
+            aliases = _equity_aliases(*aliases, f"{symbol_out}=X")
+            session_tz = "UTC"
+        else:
+            session_tz = "America/New_York"
     elif asset_class == "crypto":
         iid = f"CRYPTO:{venue.upper()}:{symbol}"
         venue_out = venue.lower()
         symbol_out = symbol
+        session_tz = "UTC"
     else:
         iid = f"DEX:{venue.lower()}:{symbol}"
         venue_out = venue.lower()
         symbol_out = symbol
+        session_tz = "UTC"
     return Instrument(
         instrument_id=iid,
         asset_class=asset_class,
@@ -322,8 +355,38 @@ def _split_crypto(text: str, venue: str | None) -> tuple[str, str]:
     return "binance", text
 
 
+def _equity_symbol(text: str) -> str:
+    """Uppercase ticker; strip Yahoo caret, NSE ``.NS``, and FX ``=X`` for the id."""
+    raw = text.split(":")[-1].upper().lstrip("^")
+    if raw.endswith("=X") and len(raw) > 2:
+        return raw[:-2]
+    if raw.endswith(".NS"):
+        return raw[:-3]
+    return raw
+
+
+def _equity_aliases(*parts: str) -> tuple[str, ...]:
+    """Deduped aliases plus ``^IRX``-style caret tickers for Yahoo indices."""
+    out: list[str] = []
+    for part in parts:
+        text = part.strip()
+        if text and text not in out:
+            out.append(text)
+        symbol = _equity_symbol(text)
+        if symbol in YAHOO_INDEX_TICKERS:
+            caret = f"^{symbol}"
+            if caret not in out:
+                out.append(caret)
+    return tuple(out)
+
+
 def _equity_venue(text: str) -> str:
-    symbol = text.split(":")[-1].upper()
+    tail = text.split(":")[-1].upper()
+    if tail.endswith(".NS"):
+        return "XNSE"
+    if tail.endswith("=X"):
+        return "CCY"
+    symbol = _equity_symbol(text)
     return "XNYS" if symbol in _NYSE_TICKERS else "XNAS"
 
 

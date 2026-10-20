@@ -1,4 +1,4 @@
-"""Volatility Indicators: ATR, Bollinger, Keltner, Donchian, rolling stdev."""
+"""Volatility Indicators: ATR, Bollinger, Keltner, Donchian, rolling stdev, ewm_std."""
 
 from __future__ import annotations
 
@@ -136,3 +136,27 @@ def stdev(panel: pl.DataFrame, length: int = 20, col: str = "close", ddof: int =
     require_columns(panel, col)
     require_length(length)
     return eval_series(panel, rolling_std(pl.col(col), length, ddof=ddof), "stdev")
+
+
+def ewm_std(panel: pl.DataFrame, half_life: float, col: str = "close") -> pl.Series:
+    """Causal exponential-weighted standard deviation per Instrument.
+
+    ``half_life`` is in bars: an observation's relative weight halves after
+    that many periods. Includes the current bar. The first bar is null
+    (undefined std of a single point).
+
+    Args:
+        panel: Long-format Panel.
+        half_life: EWM half-life in bars. Must be ``> 0``.
+        col: Source column.
+
+    Returns:
+        Series named ``ewm_std``.
+    """
+    require_columns(panel, col)
+    if half_life <= 0:
+        raise ValueError(f"half_life must be > 0, got {half_life}")
+    expr = (
+        pl.col(col).ewm_std(half_life=half_life, adjust=False, min_samples=2, ignore_nulls=True).over("instrument_id")
+    )
+    return eval_series(panel, expr, "ewm_std")

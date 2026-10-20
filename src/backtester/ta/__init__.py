@@ -13,7 +13,7 @@ from __future__ import annotations
 from backtester.ta.momentum import cci, mom, roc, rsi, stoch, stoch_rsi, willr
 from backtester.ta.structure import swing_high, swing_labels, swing_low, swings
 from backtester.ta.trend import adx, aroon, ema, macd, sma, supertrend, wma
-from backtester.ta.volatility import atr, bbands, donchian, keltner, stdev
+from backtester.ta.volatility import atr, bbands, donchian, ewm_std, keltner, stdev
 from backtester.ta.volume import cmf, mfi, obv, vwap
 
 CATALOG: tuple[str, ...] = (
@@ -36,6 +36,7 @@ CATALOG: tuple[str, ...] = (
     "keltner",
     "donchian",
     "stdev",
+    "ewm_std",
     "obv",
     "mfi",
     "cmf",
@@ -63,6 +64,7 @@ __all__ = [
     "cmf",
     "donchian",
     "ema",
+    "ewm_std",
     "keltner",
     "macd",
     "mfi",

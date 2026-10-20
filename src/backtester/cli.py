@@ -4,7 +4,8 @@ from __future__ import annotations
 
 import argparse
 import sys
-from collections.abc import Sequence
+from collections.abc import Iterator, Sequence
+from contextlib import contextmanager
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
@@ -19,7 +20,7 @@ from backtester.inspect.chart import (
     write_series_chart,
 )
 from backtester.query.reader import BarReader
-from backtester.settings import load_settings
+from backtester.settings import Settings, load_settings
 from backtester.store.parquet_duckdb import ParquetDuckDBStore
 from backtester.timeframes import Timeframe, parse_timeframe
 
@@ -42,7 +43,11 @@ def _build_parser() -> argparse.ArgumentParser:
     ingest = sub.add_parser("ingest", help="Fetch Coverage holes for an Instrument.")
     ingest.add_argument("query", help="Ticker, id, CCXT symbol, chain:address, or DexScreener URL.")
     _add_common(ingest)
-    ingest.add_argument("--source", default=None, help="Vendor (yahoo, alphavantage, binance, geckoterminal, …).")
+    ingest.add_argument(
+        "--source",
+        default=None,
+        help="Vendor (yahoo, bhavcopy, alphavantage, binance, geckoterminal, …).",
+    )
     ingest.add_argument(
         "--class",
         dest="asset_class",
@@ -124,37 +129,51 @@ def _add_common(parser: argparse.ArgumentParser) -> None:
     )
 
 
+@contextmanager
+def _open_store(settings: Settings) -> Iterator[ParquetDuckDBStore]:
+    """Open the Hive store and close the DuckDB connection when the command ends.
+
+    Callers validate ``--tz`` before entering. ``ParquetDuckDBStore`` creates
+    the data directory on init, so a bad timezone must not open the store.
+    """
+    store = ParquetDuckDBStore(Path(settings.data_dir))
+    try:
+        yield store
+    finally:
+        store.close()
+
+
 def _cmd_ingest(args: argparse.Namespace) -> int:
     settings = load_settings()
     tz = args.tz or settings.display_tz
     require_zone(tz)
     start, end = _parse_range(args.start, args.end, tz)
-    store = ParquetDuckDBStore(Path(settings.data_dir))
-    engine = IngestEngine(store, settings=settings)
-    request = IngestRequest(
-        query=args.query,
-        timeframe=parse_timeframe(args.tf),
-        start=start,
-        end=end,
-        source=args.source,
-        asset_class=args.asset_class,
-        venue=args.venue,
-        tz=tz,
-        session=args.session,
-    )
-    try:
-        result = engine.ingest(request)
-    except IncompleteHistoryError as exc:
-        print(f"error: {exc}", file=sys.stderr)
-        return 2
-    extra = f" warnings={list(result.warnings)}" if result.warnings else ""
-    print(
-        f"{result.instrument.instrument_id} source={result.source} tf={result.timeframe} "
-        f"rows={result.rows_written} holes={result.holes_fetched} noop={result.noop}{extra}"
-    )
-    if result.instrument.alternatives:
-        print(f"alternatives: {list(result.instrument.alternatives)}")
-    return 0
+    with _open_store(settings) as store:
+        engine = IngestEngine(store, settings=settings)
+        request = IngestRequest(
+            query=args.query,
+            timeframe=parse_timeframe(args.tf),
+            start=start,
+            end=end,
+            source=args.source,
+            asset_class=args.asset_class,
+            venue=args.venue,
+            tz=tz,
+            session=args.session,
+        )
+        try:
+            result = engine.ingest(request)
+        except IncompleteHistoryError as exc:
+            print(f"error: {exc}", file=sys.stderr)
+            return 2
+        extra = f" warnings={list(result.warnings)}" if result.warnings else ""
+        print(
+            f"{result.instrument.instrument_id} source={result.source} tf={result.timeframe} "
+            f"rows={result.rows_written} holes={result.holes_fetched} noop={result.noop}{extra}"
+        )
+        if result.instrument.alternatives:
+            print(f"alternatives: {list(result.instrument.alternatives)}")
+        return 0
 
 
 def _cmd_read(args: argparse.Namespace) -> int:
@@ -162,61 +181,61 @@ def _cmd_read(args: argparse.Namespace) -> int:
     tz = args.tz or settings.display_tz
     require_zone(tz)
     start, end = _parse_range(args.start, args.end, tz)
-    store = ParquetDuckDBStore(Path(settings.data_dir))
-    reader = BarReader(store)
-    lf = reader.read(
-        args.instrument_id,
-        parse_timeframe(args.tf),
-        start,
-        end,
-        tz=tz,
-        resample=args.resample,
-        source=args.source,
-    )
-    frame = lf.collect()
-    limit = args.limit
-    print(frame.head(limit))
-    print(f"rows={frame.height} tz={tz}")
-    return 0
+    with _open_store(settings) as store:
+        reader = BarReader(store)
+        lf = reader.read(
+            args.instrument_id,
+            parse_timeframe(args.tf),
+            start,
+            end,
+            tz=tz,
+            resample=args.resample,
+            source=args.source,
+        )
+        frame = lf.collect()
+        limit = args.limit
+        print(frame.head(limit))
+        print(f"rows={frame.height} tz={tz}")
+        return 0
 
 
 def _cmd_coverage(args: argparse.Namespace) -> int:
     settings = load_settings()
-    store = ParquetDuckDBStore(Path(settings.data_dir))
-    tf = parse_timeframe(args.tf)
-    sources = [args.source] if args.source else _infer_sources(store, args.instrument_id, tf)
-    if not sources:
-        print("no coverage")
+    with _open_store(settings) as store:
+        tf = parse_timeframe(args.tf)
+        sources = [args.source] if args.source else _infer_sources(store, args.instrument_id, tf)
+        if not sources:
+            print("no coverage")
+            return 0
+        for source in sources:
+            ranges = store.coverage(args.instrument_id, tf, source)
+            if not ranges:
+                print(f"{args.instrument_id} {tf} {source}: (none)")
+                continue
+            for item in ranges:
+                print(
+                    f"{item.instrument_id} {item.timeframe} {item.source} "
+                    f"{item.start_utc.isoformat()} → {item.end_utc.isoformat()}"
+                )
         return 0
-    for source in sources:
-        ranges = store.coverage(args.instrument_id, tf, source)
-        if not ranges:
-            print(f"{args.instrument_id} {tf} {source}: (none)")
-            continue
-        for item in ranges:
-            print(
-                f"{item.instrument_id} {item.timeframe} {item.source} {item.start_utc.isoformat()} → {item.end_utc.isoformat()}"
-            )
-    return 0
 
 
 def _cmd_compact(args: argparse.Namespace) -> int:
     settings = load_settings()
-    store = ParquetDuckDBStore(Path(settings.data_dir))
-    removed = store.compact(args.instrument)
-    print(f"compacted files={removed}")
-    if args.prune:
-        pruned = store.prune_hot_1m(hot_days=settings.hot_1m_days)
-        print(f"pruned_1m_files={pruned}")
-    return 0
+    with _open_store(settings) as store:
+        removed = store.compact(args.instrument)
+        print(f"compacted files={removed}")
+        if args.prune:
+            pruned = store.prune_hot_1m(hot_days=settings.hot_1m_days)
+            print(f"pruned_1m_files={pruned}")
+        return 0
 
 
 def _cmd_chart(args: argparse.Namespace) -> int:
     settings = load_settings()
     tz = args.tz or settings.display_tz
     require_zone(tz)
-    store = ParquetDuckDBStore(Path(settings.data_dir))
-    try:
+    with _open_store(settings) as store:
         if args.inventory:
             path = write_inventory_chart(store, tz=tz, open_browser=not args.no_open)
             print(path)
@@ -258,8 +277,6 @@ def _cmd_chart(args: argparse.Namespace) -> int:
         )
         print(path)
         return 0
-    finally:
-        store.close()
 
 
 def _cmd_ta_list(_args: argparse.Namespace) -> int:
@@ -291,8 +308,7 @@ def _strat_execute(yaml_path: str, *, chart: bool, open_browser: bool) -> int:
     from backtester.strategy.spec import load_spec
 
     settings = load_settings()
-    store = ParquetDuckDBStore(Path(settings.data_dir))
-    try:
+    with _open_store(settings) as store:
         spec = load_spec(yaml_path)
         results = run_spec(spec, store)
         print(format_metrics_table([item.metrics for item in results]))
@@ -304,8 +320,6 @@ def _strat_execute(yaml_path: str, *, chart: bool, open_browser: bool) -> int:
             )
             print(path)
         return 0
-    finally:
-        store.close()
 
 
 def _parse_range(start_raw: str, end_raw: str | None, tz: str) -> tuple[datetime, datetime]:
@@ -334,7 +348,7 @@ def _parse_dt(raw: str, tz: str, *, is_end: bool) -> datetime:
 def _infer_sources(store: ParquetDuckDBStore, instrument_id: str, timeframe: Timeframe) -> list[str]:
     # Probe common sources; Coverage rows are per source.
     found: list[str] = []
-    for source in ("yahoo", "alphavantage", "binance", "geckoterminal", "dexscreener", "hyperliquid"):
+    for source in ("yahoo", "bhavcopy", "alphavantage", "binance", "geckoterminal", "dexscreener", "hyperliquid"):
         if store.coverage(instrument_id, timeframe, source):
             found.append(source)
     return found
